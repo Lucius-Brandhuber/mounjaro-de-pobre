@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Mounjaro de Pobre – Quiz Personalizado de Jejum</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f0f0f0;min-height:100vh;display:flex;justify-content:center;align-items:flex-start}
+#app{width:100%;max-width:520px;background:#fff;min-height:100vh;position:relative;overflow:hidden}
+.header{display:flex;justify-content:center;align-items:center;padding:14px 20px 0;position:relative}
+.header img{height:38px;object-fit:contain}
+.back-btn{position:absolute;left:14px;background:none;border:none;font-size:22px;cursor:pointer;color:#444;line-height:1}
+.prog-wrap{padding:10px 20px 0}
+.prog-bar{height:6px;background:#e0e0e0;border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,#3db8ac,#2fa898);border-radius:3px;transition:width .4s ease}
+.screen{padding:22px 20px 48px;animation:fi .25s ease}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.stitle{font-size:20px;font-weight:700;color:#1a1a1a;text-align:center;margin-bottom:24px;line-height:1.35}
+.stitle.left{text-align:left}
+.ssub{font-size:13px;color:#666;text-align:center;margin-top:-18px;margin-bottom:20px;line-height:1.5}
+/* Landing */
+.land{padding:0}
+.land-hdr{padding:14px 20px;display:flex;justify-content:center}
+.land-hdr img{height:44px}
+.land-hero{padding:0 20px;text-align:center}
+.land-hero h1{font-size:22px;font-weight:800;color:#1a1a1a;line-height:1.3;margin-bottom:8px}
+.land-hero h1 em{font-style:normal;color:#e63946}
+.land-hero p{font-size:14px;color:#555;margin-bottom:14px}
+.land-img{width:100%;display:block;margin:12px 0}
+.land-cta{margin:0 20px 40px;background:linear-gradient(90deg,#3db8ac,#2fa898);color:#fff;border:none;border-radius:14px;padding:17px;font-size:16px;font-weight:800;cursor:pointer;width:calc(100% - 40px);text-transform:uppercase;letter-spacing:.5px}
+/* Gender cards */
+.gcards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px}
+.gcard{border:2px solid #e0e0e0;border-radius:16px;overflow:hidden;cursor:pointer;transition:border-color .2s;background:#fafafa}
+.gcard:hover{border-color:#3db8ac}
+.gcard img{width:100%;height:155px;object-fit:cover}
+.gcard-lbl{padding:11px 14px;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:16px}
+.gcard-lbl .arr{background:#f0f0f0;border-radius:50%;width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:13px}
+/* Option list */
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border:1.5px solid #e0e0e0;border-radius:12px;cursor:pointer;transition:all .18s;background:#fff}
+.opt:hover,.opt.sel{border-color:#3db8ac;background:#f0faf9}
+.opt .otxt{font-size:15px;color:#1a1a1a;font-weight:500;flex:1}
+.opt .oimg{width:50px;height:50px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.opt .oemo{font-size:22px;flex-shrink:0}
+.opt .ochk{width:22px;height:22px;border:2px solid #ccc;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;transition:all .18s}
+.opt.sel .ochk{background:#3db8ac;border-color:#3db8ac;color:#fff}
+.opt .oleft{display:flex;align-items:center;gap:10px;flex:1}
+.opt .oico{width:36px;height:36px;border-radius:8px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.opt .osub{font-size:12px;color:#777;margin-top:2px}
+/* Char + options layout */
+.crow{display:flex;gap:14px;align-items:flex-start}
+.crow .cimg{width:100px;flex-shrink:0;object-fit:contain}
+.crow .copts{flex:1;display:flex;flex-direction:column;gap:10px}
+/* Social proof */
+.sp{text-align:center;padding:32px 0 8px}
+.sp-num{font-size:38px;font-weight:900;color:#1a1a1a}
+.sp-sub{font-size:15px;color:#555;margin-bottom:20px}
+.sp-img{max-width:260px;display:block;margin:0 auto 24px}
+/* Interstitial */
+.inti-chart{width:100%;border-radius:10px;margin:14px 0}
+.inti-sub{font-size:13px;color:#555;text-align:center;line-height:1.5;margin:8px 0 16px}
+/* Food picker */
+.fsec-title{font-size:13px;font-weight:700;color:#1a1a1a;margin:16px 0 8px}
+.fgrid{display:flex;flex-wrap:wrap;gap:8px}
+.fchip{padding:7px 13px;border:1.5px solid #e0e0e0;border-radius:20px;font-size:13px;cursor:pointer;background:#fff;color:#1a1a1a;transition:all .18s}
+.fchip.sel{background:#3db8ac;border-color:#3db8ac;color:#fff}
+/* Slider */
+.sl-val{text-align:center;font-size:50px;font-weight:800;color:#1a1a1a;margin:18px 0}
+.sl-val .u{font-size:20px;font-weight:400;color:#777}
+.sl-tog{display:flex;background:#f0f0f0;border-radius:8px;padding:3px;width:fit-content;margin:0 auto 4px}
+.sl-tog button{padding:6px 20px;border:none;border-radius:6px;background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:#666;transition:all .18s}
+.sl-tog button.a{background:#3db8ac;color:#fff}
+input[type=range]{-webkit-appearance:none;width:100%;height:4px;background:#e0e0e0;border-radius:2px;outline:none;margin:18px 0 6px}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;background:#3db8ac;border-radius:50%;cursor:pointer;box-shadow:0 2px 6px rgba(61,184,172,.4)}
+.sl-lbls{display:flex;justify-content:space-between;font-size:12px;color:#aaa;margin-bottom:4px}
+.sl-hint{text-align:center;font-size:13px;color:#aaa}
+.imc-box{background:#e8f4ff;border:1.5px solid #b0d4f0;border-radius:12px;padding:13px 15px;margin-top:16px}
+.imc-box .ibt{font-size:14px;font-weight:700;color:#2255aa;margin-bottom:5px}
+.imc-box .ibs{font-size:13px;color:#444;line-height:1.5}
+/* Text input */
+.tinput{width:100%;padding:14px 15px;border:1.5px solid #e0e0e0;border-radius:12px;font-size:17px;outline:none;margin-bottom:14px}
+.tinput:focus{border-color:#3db8ac}
+/* BMI result */
+.bmi-scale-lbl{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:4px}
+.bmi-scale-val{font-size:14px;font-weight:700;color:#1a1a1a;margin-bottom:3px}
+.bmi-scale-pct{font-size:15px;font-weight:700;color:#e63946;float:right}
+.bmi-bar{position:relative;height:8px;background:linear-gradient(90deg,#aad4a4,#f0c040,#e63946);border-radius:4px;margin:14px 0 22px}
+.bmi-marker{position:absolute;top:-6px;width:20px;height:20px;background:#3db8ac;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.2);transform:translateX(-50%)}
+.bmi-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-top:3px}
+.bmi-res-img{display:block;margin:10px auto;height:200px;object-fit:contain}
+.alert-box{background:#fff8e6;border-left:3px solid #f0b429;border-radius:8px;padding:12px 14px;margin-top:14px}
+.alert-box .abt{font-size:14px;font-weight:700;color:#9a6a00;margin-bottom:5px}
+.alert-box .abs{font-size:13px;color:#555;line-height:1.5}
+/* Projection chart (SVG) */
+.proj-title{font-size:20px;font-weight:700;text-align:center;color:#1a1a1a;margin-bottom:8px}
+.proj-sub{font-size:14px;color:#555;text-align:center;margin-bottom:6px}
+.proj-goal{font-size:15px;font-weight:700;text-align:center;margin-bottom:18px;text-decoration:underline}
+/* Rosto */
+.rosto-img{width:100%;border-radius:12px;margin:14px 0}
+.rosto-txt{font-size:13px;color:#555;line-height:1.6;text-align:center;margin-bottom:16px}
+/* Loading */
+.load-title{font-size:20px;font-weight:700;text-align:center;color:#1a1a1a;margin-bottom:18px}
+.load-bar-wrap{height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden;margin-bottom:6px}
+.load-bar-fill{height:100%;background:linear-gradient(90deg,#3db8ac,#2fa898);border-radius:4px;transition:width 1.2s ease}
+.load-pct{font-size:12px;color:#aaa;text-align:right;margin-bottom:8px}
+.load-status{font-size:15px;font-weight:600;color:#1a1a1a;text-align:center;margin-bottom:28px}
+.test-count{font-size:38px;font-weight:900;text-align:center;color:#1a1a1a}
+.test-sub{font-size:14px;color:#555;text-align:center;margin-bottom:18px}
+.test-card{background:#f8f8f8;border-radius:12px;padding:16px}
+.test-hdr{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.test-hdr img{width:44px;height:44px;border-radius:50%;object-fit:cover}
+.test-name{font-weight:700;font-size:14px}
+.test-stars{color:#2dbe6c;font-size:12px;margin-top:2px}
+.test-ttl{font-size:14px;font-weight:700;margin-bottom:6px}
+.test-body{font-size:13px;color:#555;line-height:1.5}
+.test-dots{display:flex;justify-content:center;gap:6px;margin-top:16px}
+.dot{width:8px;height:8px;border-radius:50%;background:#ccc}
+.dot.a{background:#3db8ac}
+/* Final */
+.final-title{font-size:20px;font-weight:700;text-align:center;color:#1a1a1a;margin-bottom:10px}
+.final-sub{font-size:14px;color:#555;text-align:center;margin-bottom:5px}
+.final-goal{font-size:16px;font-weight:700;text-align:center;margin-bottom:22px}
+/* Continue button */
+.btn-cont{width:100%;background:linear-gradient(90deg,#3db8ac,#2fa898);color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;margin-top:22px;letter-spacing:.3px}
+.btn-cont:disabled{background:#ccc;cursor:not-allowed}
+.btn-cta{width:100%;background:linear-gradient(90deg,#3db8ac,#2fa898);color:#fff;border:none;border-radius:13px;padding:18px;font-size:17px;font-weight:800;cursor:pointer;letter-spacing:.3px;text-transform:uppercase}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const IMGS='imagens%20quiz/';
+const DEPS='imagens%20depoimentos/';
+const LOGO='logos/logo-mounjaro-de-pobre.png';
+
+const state={
+  step:0,       // 0=landing,1=gender,2+=quiz
+  gender:null,
+  answers:{},
+  selected:[],
+  height:170, weight:80, targetWeight:70,
+  heightUnit:'cm', weightUnit:'kg',
+  age:'',
+  loadPct:0, testIdx:0,
+  screens:[]
+};
+
+const testimonials=[
+  {img:DEPS+'dp1.png',name:'Sérgio Augusto',title:'Nunca tinha visto nenhum conteúdo parecido!',body:'O conteúdo de vcs se encaixou perfeitamente com o que eu precisava. Eu sempre gostei de correr mas de 4 anos pra cá eu não conseguia, estava acima do peso e era muito complicado... Foi quando eu conheci o plano personalizado de jejum de vocês, perdi um pouco mais de 10kg... E no final de semana passado voltei a correr, só agradecer!!'},
+  {img:DEPS+'dp2.png',name:'Rogéria Cardoso',title:'Realmente esse Plano é incrível',body:'Fiquei realmente surpresa com esse plano, não imaginei que iria fazer tanta diferença! Finalmente consegui sair dos 68kg e voltar para os meus 60kg. Eu sempre gostei de fazer jejum, mas eu não sabia nem da metade das estratégias que vcs passam... O planejamento das refeições me ajudou demais, gratidão!!'},
+  {img:DEPS+'dp3.png',name:'Cláudia Santos',title:'Perder peso era muito difícil, agora estou conseguindo sem esforço!',body:'Estou muito feliz com os resultados do Plano personalizado! Desde que comecei a seguir as orientações, notei uma grande diferença no espelho... to muito menos inchada e to com menos 5kg na balança. Mas isso nem foi o melhor, o que mais mudou foi a minha energia, antes eu já acordava cansada sabe? agora parece ter 20 anos novamente kkkk, obrigada!!'}
+];
+
+function buildScreens(g){
+  const h=g==='homem';
+  return [
+    // 0: age
+    {type:'single-image',title:'Ajuste o seu plano de acordo com a sua idade',options:h?[
+      {text:'18 a 25 anos',img:IMGS+'h2.webp'},{text:'26 a 35 anos',img:IMGS+'h3.webp'},
+      {text:'36 a 45 anos',img:IMGS+'h4.webp'},{text:'+46 anos',img:IMGS+'h5.webp'}
+    ]:[
+      {text:'18 a 25 anos',img:IMGS+'m2.png'},{text:'26 a 35 anos',img:IMGS+'m3.png'},
+      {text:'36 a 45 anos',img:IMGS+'m4.png'},{text:'+46 anos',img:IMGS+'m5.png'}
+    ]},
+    // 1: social proof
+    {type:'social-proof',num:'+45 mil pessoas',sub:'escolheram o Seca Jejum Turbo',img:h?IMGS+'h6.webp':IMGS+'m6.webp'},
+    // 2: main objective
+    {type:'single-emoji',title:'Qual é o seu objetivo principal?',options:[
+      {text:'Perder peso',emoji:'🤘'},{text:'Ficar em forma',emoji:'👌'},
+      {text:'Melhorar a saúde do coração',emoji:'🫀'},{text:'Aliviar o estresse',emoji:'🧘'}
+    ]},
+    // 3: físico
+    {type:'single-image',title:'Como você descreveria seu físico?',options:h?[
+      {text:'Magro',img:IMGS+'h7.webp'},{text:'Flácido',img:IMGS+'h8.webp'},
+      {text:'Uns quilinhos a mais',img:IMGS+'h9.webp'},{text:'Obeso',img:IMGS+'h10.webp'}
+    ]:[
+      {text:'Magra',img:IMGS+'m7.png'},{text:'Falsa magra',img:IMGS+'m8.png'},
+      {text:'Sobrepeso',img:IMGS+'m9.png'},{text:'Obesa',img:IMGS+'m10.png'}
+    ]},
+    // 4: interstitial – manter forma
+    {type:'interstitial',title:h?'Sabemos como mantê-lo em forma e saudável a longo prazo':'Sabemos como mantê-la em forma e saudável a longo prazo',chartImg:IMGS+'imgetapa7.webp'},
+    // 5: objetivo corporal
+    {type:'single-image',title:h?'Qual é o seu objetivo corporal?':'Qual corpo você deseja alcançar?',options:h?[
+      {text:'Magro',img:IMGS+'h11.webp'},{text:'Em forma',img:IMGS+'h12.webp'},
+      {text:'Definido',img:IMGS+'h13.webp'},{text:'Rasgado',img:IMGS+'h14.webp'}
+    ]:[
+      {text:'Curvilínea',img:IMGS+'m11.png'},{text:'Magra',img:IMGS+'m12.png'},
+      {text:'Normal',img:IMGS+'m13.png'},{text:'Em forma',img:IMGS+'m14.png'},{text:'Cheia',img:IMGS+'m15.png'}
+    ]},
+    // 6: áreas do corpo
+    {type:'multi-image',title:'Quais áreas do corpo você quer focar?',options:h?[
+      {text:'Braços',img:IMGS+'h15.webp'},{text:'Peito',img:IMGS+'h16.webp'},
+      {text:'Barriga',img:IMGS+'h17.webp'},{text:'Pernas',img:IMGS+'h18.webp'},{text:'Costas',img:IMGS+'h19.webp'}
+    ]:[
+      {text:'Barriga',img:IMGS+'m16.png'},{text:'Bunda',img:IMGS+'m17.png'},
+      {text:'Peito',img:IMGS+'m18.png'},{text:'Pernas',img:IMGS+'m19.png'}
+    ]},
+    // 7: melhor forma
+    {type:'single-char',title:'Faz quanto tempo que você se sentiu na sua melhor forma?',char:h?IMGS+'h20.webp':IMGS+'m20.png',options:[
+      {text:'0 a 6 meses atrás'},{text:'7 a 12 meses atrás'},{text:'1 a 3 anos atrás'},{text:'Mais de 3 anos atrás'}
+    ]},
+    // 8: interstitial metabolismo
+    {type:'interstitial',title:'68% das mudanças de peso são influenciadas pelo seu metabolismo',sub:'Mas boas notícias - você está no controle! Ao gerenciar sua ingestão calórica diária, gastos e atividade, você pode atingir suas metas, e estamos aqui para ajudar você',chartImg:IMGS+'imgetapa11.webp'},
+    // 9: tipo físico
+    {type:'single-emoji',title:'O que mais te descreve?',options:[
+      {text:'Tenho dificuldade em ganhar músculos',emoji:'🙄'},
+      {text:'Eu ganho e perco sem esforço',emoji:'💪'},
+      {text:'Eu ganho peso facilmente, mas tenho dificuldade para perder',emoji:'😬'}
+    ]},
+    // 10: conhecimento jejum
+    {type:'single-emoji',title:'O que você sabe sobre o jejum intermitente?',options:[
+      {text:'Não sei nada',emoji:'🤔'},{text:'Já ouvi falar um pouco',emoji:'🧑‍🎤'},{text:'Entendo bastante',emoji:'😎'}
+    ]},
+    // 11: café da manhã
+    {type:'single-image',title:'Quando você costuma tomar seu café da manhã?',options:[
+      {text:'Entre 6 e 8 da manhã',img:IMGS+'img1etapa14.png'},{text:'Entre 8 e 10 da manhã',img:IMGS+'img2etapa14.png'},
+      {text:'Entre 10h e meio-dia',img:IMGS+'img3etapa14.png'},{text:'Eu costumo pular o café da manhã',img:IMGS+'img4etapa14.png'}
+    ]},
+    // 12: almoço
+    {type:'single-image',title:'Quando você costuma almoçar?',options:[
+      {text:'Entre 10h e 12h',img:IMGS+'img1etapa15.png'},{text:'Entre 12h e 14h',img:IMGS+'img2etapa15.png'},
+      {text:'Entre 14h e 16h',img:IMGS+'img3etapa15.png'},{text:'Eu costumo pular o almoço',img:IMGS+'img4etapa15.png'}
+    ]},
+    // 13: jantar
+    {type:'single-image',title:'Quando você janta?',options:[
+      {text:'Entre 16h e 18h',img:IMGS+'img1etapa16.png'},{text:'Entre 18h e 20h',img:IMGS+'img2etapa16.png'},
+      {text:'Entre 20h e 22h',img:IMGS+'img3etapa16.png'},{text:'Eu costumo pular o jantar',img:IMGS+'img4etapa16.png'}
+    ]},
+    // 14: restrição alimentar
+    {type:'multi-icon-sub',title:'Você tem alguma restrição alimentar?',options:[
+      {text:'Sem lactose',sub:'Eu não consumo alimentos com lactose',emoji:'🥛'},
+      {text:'Sem glúten',sub:'Eu evito grãos com glúten',emoji:'🍩'},
+      {text:'Vegetariano',sub:'Eu não como carne',emoji:'🥦'},
+      {text:'Vegano',sub:'Eu não consumo produto de origem animal',emoji:'🌱'},
+      {text:'Nenhum peixe',sub:'Não como nenhum tipo de peixe',emoji:'🐟'},
+      {text:'Nenhuma das acima',sub:'Eu como quase tudo',emoji:'❌'}
+    ]},
+    // 15: food picker
+    {type:'food-picker',title:'Escolha as comidas que você gosta'},
+    // 16: cozinhar/comer fora
+    {type:'single-emoji',title:'Você prefere cozinhar, comer fora ou pedir comida?',options:[
+      {text:'Cozinhar em casa',emoji:'🍲'},{text:'Eu prefiro ir a um restaurante',emoji:'🍽️'},
+      {text:'Gosto de pedir comida',emoji:'🍟'},{text:'Eu faço um pouco de tudo',emoji:'🙂'}
+    ]},
+    // 17: pausa no fim de semana
+    {type:'single-emoji',title:'Você precisa de uma pausa no Jejum para o final de semana?',options:[
+      {text:'Claro que sim! Final de semana é para curtir',emoji:'👌'},
+      {text:'Não paro nem no fim de semana!',emoji:'💪'}
+    ]},
+    // 18: exercício
+    {type:'single-char',title:'Com que frequência você se exercita?',char:h?IMGS+'h21.webp':IMGS+'m21.png',options:[
+      {text:'Quase todos os dias'},{text:'Várias vezes por semana'},{text:'Várias vezes por mês'},{text:'Nunca'}
+    ]},
+    // 19: rotina trabalho
+    {type:'single-char',title:'Como é a sua rotina de trabalho?',char:h?IMGS+'h22.webp':IMGS+'m22.png',options:[
+      {text:'das 09:00 às 18:00'},{text:'Turnos noturnos'},{text:'Meu horário é flexível'},{text:h?'Estou aposentado':'Estou aposentada'}
+    ]},
+    // 20: dia a dia
+    {type:'single-emoji',title:'Como você descreve o seu dia a dia?',options:[
+      {text:h?'Eu passo a maior parte do dia sentado':'Eu passo a maior parte do dia sentada',emoji:'💻'},
+      {text:h?'Um pouco sentado e um pouco caminhando':'Um pouco sentada e um pouco caminhando',emoji:'🪑'},
+      {text:'Fico em pé o dia todo',emoji:'🚶'}
+    ]},
+    // 21: fôlego
+    {type:'single-emoji',title:'Você fica sem fôlego depois de subir um lance de escadas?',options:[
+      {text:'Fico tão sem fôlego que não consigo falar',emoji:'🥵'},
+      {text:'Fico um pouco sem fôlego, mas consigo falar',emoji:'💨'},
+      {text:'Fico bem depois de um lance de escadas',emoji:'🙂'},
+      {text:'Eu consigo subir alguns lances de escada facilmente',emoji:'🚀'}
+    ]},
+    // 22: caminhada
+    {type:'single-emoji',title:'Com que frequência você sai para caminhar?',options:[
+      {text:'Quase todos os dias',emoji:'😎'},{text:'3 a 4 vezes por semana',emoji:'💪'},
+      {text:'1 a 2 vezes por semana',emoji:'🙂'},{text:'Mais de uma vez por mês',emoji:'👍'}
+    ]},
+    // 23: sono
+    {type:'single-char',title:'Quantas horas você costuma dormir?',char:h?IMGS+'h23.webp':IMGS+'m23.png',options:[
+      {text:'Durmo pouco (menos de 5 horas)'},{text:'Eu consigo dormir um pouco (5-6 horas)'},
+      {text:'Eu durmo muito e bem (7-8 horas)'},{text:'Gosto de dormir até mais tarde (mais de 8 horas)'}
+    ]},
+    // 24: água
+    {type:'single-char',title:'Qual é a sua ingestão diária de água?',char:h?IMGS+'h24.webp':IMGS+'m24.png',options:[
+      {text:'Eu só tomo café ou chá'},{text:'Cerca de 2 copos'},{text:'2 a 6 copos'},{text:'Mais de 6 copos'}
+    ]},
+    // 25: problemas
+    {type:'multi-problem',title:'Você tem algum desses problemas?',options:h?[
+      {text:'Joelhos sensíveis',img:IMGS+'h25.webp'},{text:'Costas sensíveis',img:IMGS+'h26.webp'},{text:'Nenhuma das acima'}
+    ]:[
+      {text:'Joelhos sensíveis',img:IMGS+'m25.png'},{text:'Costas sensíveis',img:IMGS+'m26.png'},{text:'Nenhuma das acima'}
+    ]},
+    // 26: hábitos ruins
+    {type:'multi-emoji',title:'Você tem algum desses hábitos que podem estar atrapalhando sua vida?',options:[
+      {text:'Eu como tarde da noite',emoji:'💤'},{text:'Não consigo parar de comer doces',emoji:'🍫'},
+      {text:'Eu amo refrigerantes',emoji:'🥤'},{text:'Eu adoro alimentos gordurosos ou salgados',emoji:'🧂'},
+      {text:'Nenhuma das acima',emoji:'❌'}
+    ]},
+    // 27: rosto
+    {type:'rosto',title:'Não é só o seu corpo! Veja como o Jejum pode mudar o seu rosto!',img:h?IMGS+'h28.png':IMGS+'m27.png'},
+    // 28: acontecimentos
+    {type:'multi-emoji',title:'Algum desses acontecimentos fez você ganhar peso nos últimos anos?',options:[
+      {text:'Casamento ou relacionamento',emoji:'👰'},{text:'Rotina corrida com trabalho ou família',emoji:'🤕'},
+      {text:'Dificuldades financeiras',emoji:'💰'},{text:'Lesão ou incapacidade',emoji:'🏥'},
+      {text:'Estresse ou problemas de saúde mental',emoji:'😤'},{text:'Metabolismo mais lento devido a idade',emoji:'👴'},
+      {text:'Complicações pós-tratamentos',emoji:'🩺'},{text:'Nenhuma das acima',emoji:'❌'}
+    ]},
+    // 29: motivação
+    {type:'single-emoji',title:h?'Quão motivado você está para perder peso?':'Quão motivada você está para perder peso?',options:[
+      {text:'Estou tentando fazer o jejum apenas por curiosidade',emoji:'🤔'},
+      {text:h?'Estou determinado a diminuir um ou dois tamanhos':'Estou determinada a diminuir um ou dois tamanhos',emoji:'🤘'},
+      {text:'Eu não vou parar até atingir meu peso ideal',emoji:'🔥'}
+    ]},
+    // 30: altura
+    {type:'slider-height'},
+    // 31: peso atual
+    {type:'slider-weight'},
+    // 32: peso desejado
+    {type:'slider-target'},
+    // 33: idade exata
+    {type:'age-input'},
+    // 34: IMC resumo
+    {type:'bmi-result',img:h?IMGS+'h29.webp':IMGS+'m28.png'},
+    // 35: evento
+    {type:'single-emoji',title:'Você tem algum evento importante chegando?',sub:'Ter algo para esperar pode ser uma grande motivação para alcançar o seu objetivo!',options:[
+      {text:'Férias',emoji:'✈️'},{text:'Casamento',emoji:'👰'},{text:'Feriado',emoji:'🏖️'},
+      {text:'Evento esportivo',emoji:'🏆'},{text:'Encontro de amigos',emoji:'🎂'},
+      {text:'Aniversário',emoji:'🥳'},{text:'Outro',emoji:'🧝'},{text:'Não tenho nenhum evento',emoji:'❌'}
+    ]},
+    // 36: projeção
+    {type:'projection'},
+    // 37: loading
+    {type:'loading'},
+    // 38: resultado final
+    {type:'final-result'}
+  ];
+}
+
+const TOTAL_STEPS=40; // approx for progress
+
+function pct(){
+  if(state.step===0)return 0;
+  if(state.step===1)return 2;
+  const idx=state.step-2;
+  const total=state.screens.length;
+  return Math.min(98,Math.round((idx/total)*100));
+}
+
+function render(){
+  const app=document.getElementById('app');
+  if(state.step===0){renderLanding(app);return;}
+  if(state.step===1){renderGender(app);return;}
+  const si=state.step-2;
+  const sc=state.screens[si];
+  if(!sc){renderFinal(app);return;}
+
+  let html=`<div class="header"><button class="back-btn" onclick="goBack()">&#8592;</button><img src="${LOGO}" alt="Mounjaro de Pobre"></div>
+<div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:${pct()}%"></div></div></div>`;
+
+  switch(sc.type){
+    case 'single-image':    html+=renderSingleImage(sc,si);break;
+    case 'social-proof':    html+=renderSocialProof(sc,si);break;
+    case 'single-emoji':    html+=renderSingleEmoji(sc,si);break;
+    case 'interstitial':    html+=renderInterstitial(sc,si);break;
+    case 'multi-image':     html+=renderMultiImage(sc,si);break;
+    case 'single-char':     html+=renderSingleChar(sc,si);break;
+    case 'multi-icon-sub':  html+=renderMultiIconSub(sc,si);break;
+    case 'food-picker':     html+=renderFoodPicker(sc,si);break;
+    case 'multi-problem':   html+=renderMultiProblem(sc,si);break;
+    case 'multi-emoji':     html+=renderMultiEmoji(sc,si);break;
+    case 'rosto':           html+=renderRosto(sc,si);break;
+    case 'slider-height':   html+=renderSliderHeight(si);break;
+    case 'slider-weight':   html+=renderSliderWeight(si);break;
+    case 'slider-target':   html+=renderSliderTarget(si);break;
+    case 'age-input':       html+=renderAgeInput(si);break;
+    case 'bmi-result':      html+=renderBmiResult(sc,si);break;
+    case 'projection':      html+=renderProjection(si);break;
+    case 'loading':         html+=renderLoading();break;
+    case 'final-result':    html+=renderFinalResult();break;
+  }
+  app.innerHTML=html;
+  if(sc.type==='loading')startLoading();
+}
+
+/* -------- LANDING -------- */
+function renderLanding(app){
+  app.innerHTML=`<div class="land">
+  <div class="land-hdr"><img src="${LOGO}" alt="Mounjaro de Pobre"></div>
+  <div class="land-hero">
+    <h1>Este <em>Método de Jejum Adaptado</em> está ajudando Homens e Mulheres a <em>eliminar até 10kg em 21 dias</em> sem passar fome</h1>
+    <p>Responda esse teste gratuito de apenas 2 minutos e aprenda 👇</p>
+  </div>
+  <img class="land-img" src="${IMGS}imagem inicial.png" alt="Antes e Depois">
+  <button class="land-cta" onclick="nextStep()">QUERO APRENDER TAMBÉM! 🎉</button>
+</div>`;
+}
+
+/* -------- GENDER -------- */
+function renderGender(app){
+  app.innerHTML=`<div class="header"><img src="${LOGO}" alt="Mounjaro de Pobre"></div>
+<div class="prog-wrap"><div class="prog-bar"><div class="prog-fill" style="width:1%"></div></div></div>
+<div class="screen">
+  <h2 class="stitle">Jejum Intermitente para:</h2>
+  <div class="gcards">
+    <div class="gcard" onclick="selectGender('homem')">
+      <img src="${IMGS}h1.png" alt="Homem">
+      <div class="gcard-lbl">Homem <span class="arr">›</span></div>
+    </div>
+    <div class="gcard" onclick="selectGender('mulher')">
+      <img src="${IMGS}m1.png" alt="Mulher">
+      <div class="gcard-lbl">Mulher <span class="arr">›</span></div>
+    </div>
+  </div>
+</div>`;
+}
+
+function selectGender(g){
+  state.gender=g;
+  state.screens=buildScreens(g);
+  nextStep();
+}
+
+/* -------- SINGLE IMAGE OPTIONS -------- */
+function renderSingleImage(sc,si){
+  const saved=state.answers[si];
+  let opts=sc.options.map((o,i)=>`
+    <div class="opt ${saved===i?'sel':''}" onclick="pickSingle(${si},${i},this)">
+      <span class="otxt">${o.text}</span>
+      <img class="oimg" src="${o.img}" alt="${o.text}" onerror="this.style.display='none'">
+    </div>`).join('');
+  return `<div class="screen"><h2 class="stitle">${sc.title}</h2><div class="opts">${opts}</div></div>`;
+}
+
+/* -------- SINGLE EMOJI OPTIONS -------- */
+function renderSingleEmoji(sc,si){
+  const saved=state.answers[si];
+  let sub=sc.sub?`<p class="ssub">${sc.sub}</p>`:'';
+  let opts=sc.options.map((o,i)=>`
+    <div class="opt ${saved===i?'sel':''}" onclick="pickSingle(${si},${i},this)">
+      <span class="otxt">${o.text}</span>
+      <span class="oemo">${o.emoji||''}</span>
+    </div>`).join('');
+  return `<div class="screen"><h2 class="stitle">${sc.title}</h2>${sub}<div class="opts">${opts}</div></div>`;
+}
+
+/* -------- SOCIAL PROOF -------- */
+function renderSocialProof(sc,si){
+  return `<div class="screen">
+    <div class="sp">
+      <div class="sp-num">${sc.num}</div>
+      <div class="sp-sub">${sc.sub}</div>
+      <img class="sp-img" src="${sc.img}" alt="pessoas" onerror="this.style.display='none'">
+    </div>
+    <button class="btn-cont" onclick="nextStep()">Continuar</button>
+  </div>`;
+}
+
+/* -------- INTERSTITIAL -------- */
+function renderInterstitial(sc,si){
+  let sub=sc.sub?`<p class="inti-sub">${sc.sub}</p>`:'';
+  return `<div class="screen">
+    <h2 class="stitle">${sc.title}</h2>
+    <img class="inti-chart" src="${sc.chartImg}" alt="gráfico" onerror="this.style.display='none'">
+    ${sub}
+    <button class="btn-cont" onclick="nextStep()">Continuar</button>
+  </div>`;
+}
+
+/* -------- MULTI IMAGE (body areas) -------- */
+function renderMultiImage(sc,si){
+  const saved=state.answers[si]||[];
+  let opts=sc.options.map((o,i)=>`
+    <div class="opt checkbox-item ${saved.includes(i)?'sel':''}" onclick="pickMulti(${si},${i},this)">
+      <div class="oleft">
+        <img src="${o.img}" style="width:44px;height:44px;object-fit:cover;border-radius:8px" alt="${o.text}" onerror="this.style.display='none'">
+        <span class="otxt">${o.text}</span>
+      </div>
+      <div class="ochk">${saved.includes(i)?'✓':''}</div>
+    </div>`).join('');
+  return `<div class="screen"><h2 class="stitle">${sc.title}</h2><div class="opts">${opts}</div>
+    <button class="btn-cont" id="mcBtn" ${saved.length===0?'disabled':''} onclick="nextStep()">Continuar</button></div>`;
+}
+
+/* -------- SINGLE CHAR -------- */
+function renderSingleChar(sc,si){
+  const saved=state.answers[si];
+  let opts=sc.options.map((o,i)=>`
+    <div class="opt ${saved===i?'sel':''}" onclick="pickSingle(${si},${i},this)">
+      <span class="otxt">${o.text}</span>
+    </div>`).join('');
+  return `<div class="screen"><h2 class="stitle">${sc.title}</h2>
+    <div class="crow">
+      <img class="cimg" src="${sc.char}" alt="" onerror="this.style.display='none'">
+      <div class="copts">${opts}</div>
+    </div></div>`;
+}
+
+/* -------- MULTI ICON SUB (dietary restrictions) -------- */
+function renderMultiIconSub(sc,si){
+  const saved=state.answers[si]||[];
+  let opts=sc.options.map((o,i)=>`
+    <div class="opt checkbox-item ${saved.includes(i)?'sel':''}" onclick="pickMulti(${si},${i},this)">
+      <div class="oleft">
+        <div class="oico">${o.emoji}</div>
+        <div><div class="otxt">${o.text}</div><div class="osub">${o.sub}</div></div>
+      </div>
+      <div class="ochk">${saved.includes(i)?'✓':''}</div>
+    </div>`).join('');
+  return `<div class="screen"><h2 class="stitle">${sc.title}</h2><div class="opts">${opts}</div>
+    <button class="btn-cont" id="mcBtn" ${saved.length===0?'disabled':''} onclick="nextStep()">Continuar</button></div>`;
+}
+
+/* -------- FOOD PICKER -------- */
+const foods={
+  '🥗 Vegetais':['Tomate','Pepino','Cebola','Pimentão','Cenoura','Alface','Espinafre','Cogumelos','Abobrinha'],
+  '🌾 Grãos e Pães':['Arroz','Espaguete','Pão integral','Cuscuz','Aveia','Quinoa'],
+  '🥩 Carnes e Ovos':['Ovo','Frango','Presunto','Peito de peru','Carne de boi','Carne de porco'],
+  '🐟 Peixe':['Salmão','Atum','Tilápia','Camarão','Truta'],
+  '🥛 Laticínio':['Leite','Muçarela','Iogurte','Queijo','Tofu','Requeijão','Parmesão'],
+  '🍎 Frutas':['Abacate','Maçã','Pera','Banana','Manga','Laranja','Morango']
+};
+
+function renderFoodPicker(sc,si){
+  const saved=state.answers[si]||[];
+  let html=`<div class="screen"><h2 class="stitle">${sc.title}</h2>`;
+  for(const[cat,items] of Object.entries(foods)){
+    html+=`<div class="fsec-title">${cat}</div><div class="fgrid">`;
+    items.forEach(item=>{
+      const sel=saved.includes(item);
+      html+=`<div class="fchip ${sel?'sel':''}" onclick="pickFood(${si},'${item}',this)">${item}</div>`;
+    });
+    html+=`</div>`;
+  }
+  html+=`<button class="btn-cont" id="mcBtn" ${saved.length===0?'disabled':''} onclick="nextStep()">Continuar</button></div>`;
+  return html;
+}
+
+/* -------- MULTI PROBLEM -------- */
+function renderMultiProblem(sc,si){
+  const saved=state.answers[si]||[];
+  let opts=sc.options.map((o,i)=>`
+    <div class="opt checkbox-item ${saved.includes(i)?'sel':''}" onclick="pickMulti(${si},${i},this)">
+      <div class="oleft">
+        ${o.img?`<img src="${o.img}" style="width:44px;height:44px;object-fit:cover;border-radius:8px" onerror="this.style.display='none'">`:
+          `<div class="oico">❌</div>`}
+        <span class="otxt">${o.text}</span>
+      </div>
+      <div class="ochk">${saved.includes(i)?'✓':''}</div>
+    </div>`).join('');
+  return `<div class="screen"><h2 class="stitle">${sc.title}</h2><div class="opts">${opts}</div>
+    <button class="btn-cont" id="mcBtn" ${saved.length===0?'disabled':''} onclick="nextStep()">Continuar</button></div>`;
+}
+
+/* -------- MULTI EMOJI -------- */
+function renderMultiEmoji(sc,si){
+  const saved=state.answers[si]||[];
+  let opts=sc.options.map((o,i)=>`
+    <div class="opt checkbox-item ${saved.includes(i)?'sel':''}" onclick="pickMulti(${si},${i},this)">
+      <div class="oleft">
+        <div class="oico">${o.emoji}</div>
+        <span class="otxt">${o.text}</span>
+      </div>
+      <div class="ochk">${saved.includes(i)?'✓':''}</div>
+    </div>`).join('');
+  return `<div class="screen"><h2 class="stitle">${sc.title}</h2><div class="opts">${opts}</div>
+    <button class="btn-cont" id="mcBtn" ${saved.length===0?'disabled':''} onclick="nextStep()">Continuar</button></div>`;
+}
+
+/* -------- ROSTO -------- */
+function renderRosto(sc,si){
+  return `<div class="screen">
+    <h2 class="stitle">${sc.title}</h2>
+    <img class="rosto-img" src="${sc.img}" alt="Transformação do rosto" onerror="this.style.display='none'">
+    <p class="rosto-txt">Perder peso através do jejum ajuda a reduzir gordura e inchaço no rosto, principalmente ao redor dos olhos, queixo e mandíbula, deixando sua pele com aparência mais jovem e saudável.</p>
+    <button class="btn-cont" onclick="nextStep()">Continuar</button>
+  </div>`;
+}
+
+/* -------- SLIDERS -------- */
+function renderSliderHeight(si){
+  const u=state.heightUnit;
+  const v=u==='cm'?state.height:Math.round(state.height/2.54);
+  const mn=u==='cm'?140:55, mx=u==='cm'?220:87;
+  return `<div class="screen">
+    <h2 class="stitle">Qual é a sua altura?</h2>
+    <div class="sl-tog">
+      <button class="${u==='cm'?'a':''}" onclick="setHUnit('cm')">cm</button>
+      <button class="${u==='pol'?'a':''}" onclick="setHUnit('pol')">pol</button>
+    </div>
+    <div class="sl-val"><span id="hval">${v}</span><span class="u">${u}</span></div>
+    <input type="range" id="hslider" min="${mn}" max="${mx}" value="${v}" oninput="updH(this.value)">
+    <div class="sl-lbls"><span>${mn}</span><span>${mx}</span></div>
+    <p class="sl-hint">Arraste para ajustar</p>
+    <button class="btn-cont" onclick="saveHeight();nextStep()">Continuar</button>
+  </div>`;
+}
+
+function renderSliderWeight(si){
+  const u=state.weightUnit;
+  const v=u==='kg'?state.weight:Math.round(state.weight*2.205);
+  const mn=u==='kg'?40:88, mx=u==='kg'?200:440;
+  return `<div class="screen">
+    <h2 class="stitle">Qual é o seu peso atual?</h2>
+    <div class="sl-tog">
+      <button class="${u==='kg'?'a':''}" onclick="setWUnit('kg')">kg</button>
+      <button class="${u==='lb'?'a':''}" onclick="setWUnit('lb')">lb</button>
+    </div>
+    <div class="sl-val"><span id="wval">${v}</span><span class="u">${u}</span></div>
+    <input type="range" id="wslider" min="${mn}" max="${mx}" value="${v}" oninput="updW(this.value)">
+    <div class="sl-lbls"><span>${mn}</span><span>${mx}</span></div>
+    <p class="sl-hint">Arraste para ajustar</p>
+    <button class="btn-cont" onclick="saveWeight();nextStep()">Continuar</button>
+  </div>`;
+}
+
+function renderSliderTarget(si){
+  const u=state.weightUnit;
+  const tw=u==='kg'?state.targetWeight:Math.round(state.targetWeight*2.205);
+  const mn=u==='kg'?40:88, mx=u==='kg'?200:440;
+  const imc=(state.weight/((state.height/100)**2)).toFixed(1);
+  const imcStatus=imc<18.5?'Abaixo do normal':imc<25?'Normal':imc<30?'Sobrepeso':'Obeso';
+  return `<div class="screen">
+    <h2 class="stitle">Qual é o seu peso desejado?</h2>
+    <div class="sl-tog">
+      <button class="${u==='kg'?'a':''}" onclick="setWUnit('kg')">kg</button>
+      <button class="${u==='lb'?'a':''}" onclick="setWUnit('lb')">lb</button>
+    </div>
+    <div class="sl-val"><span id="twval">${tw}</span><span class="u">${u}</span></div>
+    <input type="range" id="twslider" min="${mn}" max="${mx}" value="${tw}" oninput="updTW(this.value)">
+    <div class="sl-lbls"><span>${mn}</span><span>${mx}</span></div>
+    <p class="sl-hint">Arraste para ajustar</p>
+    <div class="imc-box">
+      <div class="ibt">O seu IMC está fora do ideal!</div>
+      <div class="ibs">É hora de cuidar do seu peso! Vamos usar suas informações para criar um plano personalizado para você, que acelera o metabolismo, ajuda na perda de peso, fortalece e melhora a saúde do coração.</div>
+    </div>
+    <button class="btn-cont" onclick="saveTarget();nextStep()">Continuar</button>
+  </div>`;
+}
+
+/* -------- AGE INPUT -------- */
+function renderAgeInput(si){
+  return `<div class="screen">
+    <h2 class="stitle">Qual é a sua idade exata?</h2>
+    <input class="tinput" type="number" id="ageinput" placeholder="Digite sua idade..." value="${state.age}" min="18" max="99">
+    <div class="imc-box">
+      <div class="ibt">Vamos usar essa informação para criar seu plano personalizado!</div>
+      <div class="ibs">Pessoas mais velhas tendem a ter mais gordura corporal do que pessoas mais jovens com o mesmo IMC, por isso vamos personalizar para você.</div>
+    </div>
+    <button class="btn-cont" onclick="saveAge()">Continuar</button>
+  </div>`;
+}
+
+/* -------- BMI RESULT -------- */
+function renderBmiResult(sc,si){
+  const imc=state.weight/((state.height/100)**2);
+  const imcVal=imc.toFixed(1);
+  const markerPct=Math.min(95,Math.max(5,((imc-16)/(40-16))*100)).toFixed(0);
+  const msg=imc<18.5?'Abaixo do normal':imc<25?'Normal':imc<30?'Sobrepeso':'Situação preocupante!';
+  const detail=imc>=25?'Parabéns por dar o primeiro passo. Vamos criar um plano personalizado para acelerar seu metabolismo, aumentar sua força e melhorar sua saúde.':'Seu condicionamento está dentro do esperado. Vamos otimizar ainda mais para você.';
+  return `<div class="screen">
+    <h2 class="stitle">Resumo do seu nível de condicionamento físico</h2>
+    <div style="font-size:13px;color:#666">Índice de massa corporal (IMC)</div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+      <div style="font-size:14px;font-weight:700">Normal – entre 18,4 e 25</div>
+      <div style="font-size:15px;font-weight:700;color:#e63946">${markerPct}%</div>
+    </div>
+    <div class="bmi-bar">
+      <div class="bmi-marker" style="left:${markerPct}%"></div>
+    </div>
+    <div class="bmi-labels"><span>Anormal</span><span>Normal</span><span>${state.gender==='mulher'?'Obesa':'Obeso'}</span></div>
+    <img class="bmi-res-img" src="${sc.img}" alt="IMC" onerror="this.style.display='none'">
+    <div class="alert-box">
+      <div class="abt">${msg}</div>
+      <div class="abs">${detail}</div>
+    </div>
+    <button class="btn-cont" onclick="nextStep()">Continuar</button>
+  </div>`;
+}
+
+/* -------- PROJECTION -------- */
+function renderProjection(si){
+  const tw=state.targetWeight;
+  return `<div class="screen">
+    <h2 class="proj-title">O único plano que você precisa para entrar em forma</h2>
+    <p class="proj-sub">De acordo com as informações que você nos forneceu, você pode atingir o seu peso ideal:</p>
+    <p class="proj-goal">${tw} kg em 21 dias</p>
+    ${buildProjectionSVG()}
+    <button class="btn-cont" onclick="nextStep()">Continuar</button>
+  </div>`;
+}
+
+function buildProjectionSVG(){
+  const w=460,h=180;
+  return `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;margin:8px 0">
+    <defs>
+      <linearGradient id="pg" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#e63946"/>
+        <stop offset="50%" stop-color="#f0b429"/>
+        <stop offset="100%" stop-color="#3db8ac"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="0" width="${w}" height="${h}" rx="12" fill="#f9f9f9"/>
+    <!-- curve -->
+    <path d="M40,30 C80,32 120,60 170,90 C220,120 300,150 420,155" fill="none" stroke="url(#pg)" stroke-width="4" stroke-linecap="round"/>
+    <!-- dots -->
+    <circle cx="40" cy="30" r="7" fill="#e63946"/>
+    <circle cx="120" cy="65" r="6" fill="#e8834a"/>
+    <circle cx="200" cy="100" r="6" fill="#f0b429"/>
+    <circle cx="300" cy="135" r="6" fill="#96cc60"/>
+    <circle cx="380" cy="150" r="6" fill="#55c28a"/>
+    <circle cx="420" cy="155" r="7" fill="#3db8ac"/>
+    <!-- labels -->
+    <rect x="5" y="18" width="42" height="20" rx="5" fill="#fff" stroke="#ccc" stroke-width="1"/>
+    <text x="26" y="32" font-size="10" text-anchor="middle" fill="#333" font-weight="600">Você</text>
+    <rect x="390" y="130" width="55" height="20" rx="5" fill="#3db8ac"/>
+    <text x="417" y="144" font-size="10" text-anchor="middle" fill="#fff" font-weight="700">${state.targetWeight}kg</text>
+    <!-- axis labels -->
+    <text x="40" y="${h-6}" font-size="11" fill="#aaa" text-anchor="middle">Hoje</text>
+    <text x="${w-30}" y="${h-6}" font-size="11" fill="#aaa" text-anchor="end">21d</text>
+  </svg>`;
+}
+
+/* -------- LOADING -------- */
+function renderLoading(){
+  const t=testimonials[0];
+  return `<div class="screen" style="padding-top:16px">
+    <h2 class="load-title">Criando o seu Plano Personalizado de Jejum</h2>
+    <div class="load-bar-wrap"><div class="load-bar-fill" id="loadbar" style="width:0%"></div></div>
+    <div class="load-pct"><span id="loadpct">0%</span></div>
+    <div class="load-status" id="loadstatus">Preparando...</div>
+    <div class="test-count">+45 mil pessoas</div>
+    <div class="test-sub">nos escolheram, veja o que eles falaram sobre nós...</div>
+    <div class="test-card" id="testcard">
+      <div class="test-hdr">
+        <img class="test-hdr img" src="${t.img}" style="width:44px;height:44px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">
+        <div><div class="test-name">${t.name}</div><div class="test-stars">★★★★★</div></div>
+      </div>
+      <div class="test-ttl">${t.title}</div>
+      <div class="test-body">${t.body}</div>
+    </div>
+    <div class="test-dots" id="testdots">
+      ${testimonials.map((_,i)=>`<div class="dot ${i===0?'a':''}" onclick="showTest(${i})"></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+function startLoading(){
+  let p=0;
+  const statuses=['Preparando...','Analisando seu perfil...','Calculando seu metabolismo...','Montando seu plano alimentar...','Personalizando suas refeições...','Finalizando...'];
+  const iv=setInterval(()=>{
+    p+=Math.random()*3+1;
+    if(p>=100){p=100;clearInterval(iv);setTimeout(()=>nextStep(),800);}
+    const bar=document.getElementById('loadbar');
+    const pct=document.getElementById('loadpct');
+    const st=document.getElementById('loadstatus');
+    if(bar)bar.style.width=p.toFixed(0)+'%';
+    if(pct)pct.textContent=p.toFixed(0)+'%';
+    if(st)st.textContent=statuses[Math.min(statuses.length-1,Math.floor(p/20))];
+    const ti=Math.floor(p/35);
+    showTest(ti<testimonials.length?ti:0);
+  },200);
+}
+
+function showTest(i){
+  state.testIdx=i;
+  const t=testimonials[i];
+  const c=document.getElementById('testcard');
+  const d=document.getElementById('testdots');
+  if(!c||!d)return;
+  c.innerHTML=`<div class="test-hdr">
+    <img src="${t.img}" style="width:44px;height:44px;border-radius:50%;object-fit:cover" onerror="this.style.display='none'">
+    <div><div class="test-name">${t.name}</div><div class="test-stars">★★★★★</div></div>
+  </div>
+  <div class="test-ttl">${t.title}</div>
+  <div class="test-body">${t.body}</div>`;
+  d.innerHTML=testimonials.map((_,j)=>`<div class="dot ${j===i?'a':''}" onclick="showTest(${j})"></div>`).join('');
+}
+
+/* -------- FINAL RESULT -------- */
+function renderFinalResult(){
+  return `<div class="screen" style="text-align:center">
+    <h2 class="final-title">O seu Plano Personalizado de Jejum está pronto!</h2>
+    <p class="final-sub">De acordo com as informações que você nos forneceu, você pode atingir o seu peso ideal:</p>
+    <p class="final-goal">Você chegará ${state.targetWeight}kg em 21 dias</p>
+    ${buildProjectionSVG()}
+    <br>
+    <button class="btn-cta" onclick="alert('Redirecionar para página de vendas')">VER MEU PLANO AGORA →</button>
+  </div>`;
+}
+
+/* -------- NAVIGATION -------- */
+function nextStep(){state.step++;state.selected=[];render();}
+function goBack(){if(state.step>0){state.step--;render();}}
+
+function pickSingle(si,i,el){
+  state.answers[si]=i;
+  setTimeout(()=>nextStep(),280);
+}
+
+function pickMulti(si,i,el){
+  if(!state.answers[si])state.answers[si]=[];
+  const arr=state.answers[si];
+  const idx=arr.indexOf(i);
+  if(idx>=0)arr.splice(idx,1); else arr.push(i);
+  el.classList.toggle('sel');
+  const chk=el.querySelector('.ochk');
+  if(chk)chk.textContent=arr.includes(i)?'✓':'';
+  const btn=document.getElementById('mcBtn');
+  if(btn)btn.disabled=arr.length===0;
+}
+
+function pickFood(si,item,el){
+  if(!state.answers[si])state.answers[si]=[];
+  const arr=state.answers[si];
+  const idx=arr.indexOf(item);
+  if(idx>=0)arr.splice(idx,1); else arr.push(item);
+  el.classList.toggle('sel');
+  const btn=document.getElementById('mcBtn');
+  if(btn)btn.disabled=arr.length===0;
+}
+
+/* -------- SLIDER UTILS -------- */
+function updH(v){
+  const el=document.getElementById('hval');
+  if(el)el.textContent=v;
+}
+function updW(v){
+  const el=document.getElementById('wval');
+  if(el)el.textContent=v;
+}
+function updTW(v){
+  const el=document.getElementById('twval');
+  if(el)el.textContent=v;
+}
+function saveHeight(){
+  const s=document.getElementById('hslider');
+  if(s){
+    const v=parseInt(s.value);
+    state.height=state.heightUnit==='cm'?v:Math.round(v*2.54);
+  }
+}
+function saveWeight(){
+  const s=document.getElementById('wslider');
+  if(s){
+    const v=parseInt(s.value);
+    state.weight=state.weightUnit==='kg'?v:Math.round(v/2.205);
+  }
+}
+function saveTarget(){
+  const s=document.getElementById('twslider');
+  if(s){
+    const v=parseInt(s.value);
+    state.targetWeight=state.weightUnit==='kg'?v:Math.round(v/2.205);
+  }
+}
+function saveAge(){
+  const el=document.getElementById('ageinput');
+  if(el&&el.value){state.age=el.value;nextStep();}
+  else{el&&(el.style.borderColor='#e63946');}
+}
+function setHUnit(u){
+  saveHeight();
+  state.heightUnit=u;
+  render();
+}
+function setWUnit(u){
+  saveWeight();
+  state.weightUnit=u;
+  render();
+}
+
+// Start
+render();
+</script>
+</body>
+</html>
