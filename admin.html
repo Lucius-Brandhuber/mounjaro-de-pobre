@@ -145,6 +145,12 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:#f5f6fa;color:#1a1a2e;mi
       </div>
     </div>
 
+    <!-- Checkout -->
+    <div class="card" style="margin-bottom:24px">
+      <div class="card-title">🛒 Cliques para o Checkout</div>
+      <div id="checkoutSection"></div>
+    </div>
+
     <!-- Breakdowns -->
     <div class="three-col">
       <div class="card">
@@ -208,6 +214,7 @@ function buildDash(){
   buildAreaChart();
   buildFunnel();
   buildBreakdowns();
+  buildCheckout();
 }
 
 /* ---------- KPIs ---------- */
@@ -380,6 +387,73 @@ function showDetail(step, label, el){
         </div>
       `).join('')}
     `:`<div class="empty-state" style="padding:16px 0">Sem respostas registradas nesta etapa</div>`}
+  `;
+}
+
+/* ---------- CHECKOUT ---------- */
+function buildCheckout(){
+  const events = getEvents();
+  const clicks = events.filter(e=>e.ev==='checkout_click');
+  const el = document.getElementById('checkoutSection');
+
+  if(!clicks.length){
+    el.innerHTML='<div class="empty-state">Nenhum clique no checkout registrado ainda.</div>';
+    return;
+  }
+
+  // KPIs
+  const totalViews = _views.filter(e=>e.step===0).length||1;
+  const totalLeads = new Set(_views.map(e=>e.s)).size||1;
+  const ctr = ((clicks.length/totalLeads)*100).toFixed(1);
+
+  // By day (last 14)
+  const DAYS=14, now=Date.now(), dayMs=86400000;
+  const buckets=[];
+  for(let i=0;i<DAYS;i++){
+    const ts=now-(DAYS-1-i)*dayMs;
+    buckets.push({label:new Date(ts).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}),count:0});
+  }
+  clicks.forEach(e=>{
+    const idx=DAYS-1-Math.floor((now-e.t)/dayMs);
+    if(idx>=0&&idx<DAYS)buckets[idx].count++;
+  });
+  const maxDay=Math.max(...buckets.map(b=>b.count),1);
+
+  // By source
+  const srcMap={};
+  clicks.forEach(e=>{
+    const k=e.ref?simplifyRef(e.ref):'Direto';
+    srcMap[k]=(srcMap[k]||0)+1;
+  });
+  const srcEntries=Object.entries(srcMap).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const maxSrc=srcEntries[0]?srcEntries[0][1]:1;
+
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="d-stat"><div class="d-stat-val" style="color:#e63946">${clicks.length}</div><div class="d-stat-label">Total de cliques</div></div>
+      <div class="d-stat"><div class="d-stat-val" style="color:#e63946">${ctr}%</div><div class="d-stat-label">CTR (cliques / leads)</div></div>
+      <div class="d-stat"><div class="d-stat-val" style="color:#e63946">${new Set(clicks.map(e=>e.s)).size}</div><div class="d-stat-label">Sessões únicas</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div>
+        <div class="ans-section-title" style="margin-bottom:12px">Cliques por dia</div>
+        ${buckets.filter(b=>b.count>0||true).map(b=>`
+          <div class="ans-item">
+            <div class="ans-meta"><span>${b.label}</span><span>${b.count}</span></div>
+            <div class="ans-bg"><div class="ans-fill" style="width:${(b.count/maxDay)*100}%;background:linear-gradient(90deg,#e63946,#c1121f)"></div></div>
+          </div>
+        `).join('')}
+      </div>
+      <div>
+        <div class="ans-section-title" style="margin-bottom:12px">Por fonte</div>
+        ${srcEntries.length?srcEntries.map(([src,cnt])=>`
+          <div class="ans-item">
+            <div class="ans-meta"><span>${src}</span><span>${cnt}</span></div>
+            <div class="ans-bg"><div class="ans-fill" style="width:${(cnt/maxSrc)*100}%;background:linear-gradient(90deg,#e63946,#c1121f)"></div></div>
+          </div>
+        `).join(''):'<div class="empty-state" style="padding:8px 0">Sem dados de fonte</div>'}
+      </div>
+    </div>
   `;
 }
 

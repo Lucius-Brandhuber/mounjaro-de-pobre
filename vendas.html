@@ -461,11 +461,17 @@ function toggleFaq(el){
   if(!isOpen) item.classList.add('open');
 }
 
-// ── SMOOTH SCROLL for anchors ──
-document.querySelectorAll('a[href="https://checkout.payt.com.br/c/4MA9W6" target="_blank"]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    e.preventDefault();
-    document.getElementById('comprar').scrollIntoView({behavior:'smooth'});
+// ── CHECKOUT CLICK TRACKING ──
+document.querySelectorAll('a[href="https://checkout.payt.com.br/c/4MA9W6"]').forEach(function(a){
+  a.addEventListener('click',function(){
+    try{
+      var KEY='mdjp_ev';
+      var arr=JSON.parse(localStorage.getItem(KEY)||'[]');
+      var sid=sessionStorage.mdjp_sid||('v'+Date.now().toString(36));
+      arr.push({ev:'checkout_click',t:Date.now(),s:sid,ref:document.referrer?document.referrer.split('/')[2]:'',ua:navigator.userAgent});
+      if(arr.length>10000)arr.splice(0,arr.length-10000);
+      localStorage.setItem(KEY,JSON.stringify(arr));
+    }catch(e){}
   });
 });
 </script>
