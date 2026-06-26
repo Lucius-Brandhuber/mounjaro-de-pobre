@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seca Jejum Turbo — Mounjaro de Pobre</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#fff;font-family:'Segoe UI',Arial,sans-serif;color:#1a1a1a;width:100%}
+a{text-decoration:none}
+img{max-width:100%;display:block}
+
+/* ── HEADER ── */
+.hdr{background:#fff;border-bottom:1px solid #eee;padding:10px 20px;display:flex;justify-content:center}
+.hdr img{height:44px}
+
+/* ── HERO ── */
+.hero{background:linear-gradient(180deg,#f0faf9 0%,#fff 100%);padding:32px 20px 28px;text-align:center}
+.hero-badge{display:inline-block;background:#3db8ac;color:#fff;font-size:12px;font-weight:700;letter-spacing:.5px;padding:5px 14px;border-radius:20px;margin-bottom:14px}
+.hero h1{font-size:clamp(22px,6vw,32px);font-weight:900;line-height:1.2;color:#111;margin-bottom:6px}
+.hero h1 span{color:#3db8ac}
+.hero-sub{font-size:15px;color:#555;line-height:1.6;max-width:480px;margin:0 auto 20px}
+.hero-imgs{display:flex;gap:8px;justify-content:center;margin-bottom:20px}
+.hero-imgs img{width:48%;max-width:220px;border-radius:14px;object-fit:cover}
+.hero-arrow{display:flex;align-items:center;justify-content:center;gap:10px;font-size:13px;color:#3db8ac;font-weight:700;margin-bottom:22px}
+.hero-arrow span{font-size:22px}
+
+/* ── CTA BUTTON ── */
+.btn-cta{display:block;width:100%;max-width:480px;margin:0 auto;background:linear-gradient(135deg,#3db8ac,#2a9d8f);color:#fff;font-size:17px;font-weight:800;padding:18px 24px;border-radius:50px;border:none;cursor:pointer;text-align:center;letter-spacing:.3px;animation:ping 1.6s ease-out infinite;box-shadow:0 4px 18px rgba(61,184,172,.35)}
+.btn-cta small{display:block;font-size:12px;font-weight:400;opacity:.9;margin-top:3px}
+@keyframes ping{0%{box-shadow:0 4px 18px rgba(61,184,172,.35),0 0 0 0 rgba(61,184,172,.5)}70%{box-shadow:0 4px 18px rgba(61,184,172,.35),0 0 0 14px rgba(61,184,172,0)}100%{box-shadow:0 4px 18px rgba(61,184,172,.35),0 0 0 0 rgba(61,184,172,0)}}
+.secure-badge{margin:12px auto 0;text-align:center}
+.secure-badge img{max-width:280px;margin:0 auto;opacity:.8}
+
+/* ── SECTION WRAPPER ── */
+.sec{padding:32px 20px;max-width:540px;margin:0 auto}
+.sec-title{font-size:clamp(18px,5vw,24px);font-weight:900;text-align:center;margin-bottom:6px;line-height:1.3}
+.sec-sub{font-size:14px;color:#555;text-align:center;line-height:1.6;margin-bottom:20px}
+.divider{height:4px;width:60px;background:#3db8ac;border-radius:2px;margin:0 auto 24px}
+
+/* ── WHAT'S INSIDE ── */
+.inside-box{background:#f8fffe;border:1.5px solid #d0f0ed;border-radius:16px;padding:20px;margin-bottom:20px}
+.inside-box h3{font-size:15px;font-weight:800;color:#1a1a1a;margin-bottom:14px;text-align:center}
+.inside-item{display:flex;align-items:flex-start;gap:10px;margin-bottom:12px}
+.inside-item:last-child{margin-bottom:0}
+.inside-ico{width:22px;height:22px;background:#3db8ac;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.inside-ico svg{width:12px;height:12px;fill:none;stroke:#fff;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+.inside-txt strong{font-size:14px;font-weight:700;display:block;color:#111}
+.inside-txt span{font-size:13px;color:#555;line-height:1.5}
+
+/* ── PRICE ── */
+.price-box{background:#f8fffe;border:2px solid #3db8ac;border-radius:20px;padding:24px 20px;text-align:center;margin-bottom:20px}
+.price-from{font-size:13px;color:#999;text-decoration:line-through;margin-bottom:2px}
+.price-val{font-size:clamp(36px,10vw,52px);font-weight:900;color:#3db8ac;line-height:1}
+.price-val sup{font-size:22px;vertical-align:super}
+.price-val sub{font-size:16px;font-weight:400;color:#555}
+.price-tag{font-size:12px;color:#fff;background:#e63946;padding:4px 12px;border-radius:20px;display:inline-block;margin:8px 0 4px;font-weight:700}
+.price-note{font-size:12px;color:#666;margin-top:6px}
+.price-installment{font-size:14px;color:#555;margin-top:4px}
+
+/* ── HOW IT WORKS ── */
+.how-bg{background:#f0faf9;padding:32px 20px}
+.how-inner{max-width:540px;margin:0 auto}
+.how-step{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px}
+.how-num{width:36px;height:36px;background:#3db8ac;color:#fff;font-weight:900;font-size:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.how-txt strong{font-size:14px;font-weight:700;display:block;margin-bottom:3px}
+.how-txt span{font-size:13px;color:#555;line-height:1.5}
+
+/* ── TESTIMONIALS ── */
+.test-grid{display:flex;flex-direction:column;gap:16px}
+.test-card-pv{border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+.test-card-pv img{width:100%;object-fit:cover}
+.test-card-pv .test-txt{padding:16px;background:#fff}
+.test-card-pv .test-name-pv{font-weight:800;font-size:14px;margin-bottom:2px}
+.test-card-pv .test-stars-pv{color:#f5b800;font-size:14px;margin-bottom:6px}
+.test-card-pv .test-body-pv{font-size:13px;color:#444;line-height:1.6}
+
+/* ── BEFORE/AFTER CAROUSEL ── */
+.ba-wrap{position:relative;overflow:hidden}
+.ba-track{display:flex;transition:transform .35s ease}
+.ba-slide{min-width:100%;padding:0 4px}
+.ba-slide img{width:100%;border-radius:14px;object-fit:cover}
+.ba-nav{display:flex;justify-content:center;gap:8px;margin-top:12px}
+.ba-dot{width:8px;height:8px;border-radius:50%;background:#ccc;cursor:pointer;border:none;padding:0}
+.ba-dot.a{background:#3db8ac}
+.ba-arrows{display:flex;justify-content:space-between;position:absolute;top:50%;transform:translateY(-50%);width:100%;padding:0 8px;pointer-events:none}
+.ba-btn{pointer-events:all;background:rgba(255,255,255,.85);border:none;border-radius:50%;width:36px;height:36px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+
+/* ── GUARANTEE ── */
+.guar-box{background:#fffbf0;border:2px solid #f5b800;border-radius:20px;padding:24px 20px;display:flex;gap:16px;align-items:flex-start}
+.guar-box img{width:80px;flex-shrink:0}
+.guar-txt h3{font-size:16px;font-weight:800;margin-bottom:6px;color:#111}
+.guar-txt p{font-size:13px;color:#555;line-height:1.6}
+
+/* ── FAQ ── */
+.faq-item{border-bottom:1px solid #eee;padding:16px 0}
+.faq-q{display:flex;justify-content:space-between;align-items:center;cursor:pointer;gap:12px}
+.faq-q span{font-size:15px;font-weight:700;color:#111;flex:1;line-height:1.4}
+.faq-arrow{color:#3db8ac;font-size:18px;flex-shrink:0;transition:transform .2s}
+.faq-item.open .faq-arrow{transform:rotate(180deg)}
+.faq-a{font-size:13px;color:#555;line-height:1.7;margin-top:10px;display:none}
+.faq-item.open .faq-a{display:block}
+
+/* ── FOOTER CTA ── */
+.footer-cta{background:linear-gradient(135deg,#3db8ac,#2a9d8f);padding:36px 20px;text-align:center}
+.footer-cta h2{font-size:clamp(18px,5vw,24px);font-weight:900;color:#fff;margin-bottom:8px;line-height:1.3}
+.footer-cta p{font-size:14px;color:rgba(255,255,255,.85);margin-bottom:24px;line-height:1.6}
+.btn-cta-inv{display:block;width:100%;max-width:400px;margin:0 auto;background:#fff;color:#2a9d8f;font-size:17px;font-weight:800;padding:18px 24px;border-radius:50px;border:none;cursor:pointer;text-align:center;animation:ping-inv 1.6s ease-out infinite}
+@keyframes ping-inv{0%{box-shadow:0 4px 18px rgba(255,255,255,.3),0 0 0 0 rgba(255,255,255,.4)}70%{box-shadow:0 4px 18px rgba(255,255,255,.3),0 0 0 14px rgba(255,255,255,0)}100%{box-shadow:0 4px 18px rgba(255,255,255,.3),0 0 0 0 rgba(255,255,255,0)}}
+
+/* ── FOOTER ── */
+footer{padding:20px;text-align:center;font-size:12px;color:#aaa;border-top:1px solid #eee}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="hdr">
+  <img src="logos/nova%20logo.png" alt="Mounjaro de Pobre">
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">✅ SEU PLANO ESTÁ PRONTO</div>
+  <h1>A sua <span>Janela Metabólica</span> está pronta.<br>A decisão é sua agora.</h1>
+  <p class="hero-sub">Calculamos a janela exata para você queimar gordura enquanto come o que gosta — sem remédios, sem academia obrigatória.</p>
+  <div class="hero-imgs">
+    <img src="PV/imagens/depoimentos/dp1.jpg" alt="Antes e Depois">
+    <img src="PV/imagens/depoimentos/dp2.jpg" alt="Antes e Depois">
+  </div>
+  <div class="hero-arrow">
+    <span>⬇</span> Você pode ser a próxima <span>⬇</span>
+  </div>
+  <a href="#comprar" class="btn-cta">
+    QUERO MEU PLANO AGORA
+    <small>Acesso imediato • 100% digital</small>
+  </a>
+  <div class="secure-badge">
+    <img src="PV/imagens/imgcomprasegura.webp" alt="Compra Segura">
+  </div>
+</section>
+
+<!-- O QUE ESTÁ INCLUÍDO -->
+<section class="sec">
+  <p class="sec-title">Tudo isso vem no seu plano hoje:</p>
+  <div class="divider"></div>
+  <div class="inside-box">
+    <h3>🎯 Seca Jejum Turbo — Plano Completo</h3>
+    <div class="inside-item">
+      <div class="inside-ico"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
+      <div class="inside-txt"><strong>Plano Nutricional Personalizado</strong><span>Cardápio montado com base nas suas respostas, do café ao jantar.</span></div>
+    </div>
+    <div class="inside-item">
+      <div class="inside-ico"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
+      <div class="inside-txt"><strong>Protocolo de Jejum Inteligente</strong><span>Sua janela metabólica exata calculada para o seu corpo e rotina.</span></div>
+    </div>
+    <div class="inside-item">
+      <div class="inside-ico"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
+      <div class="inside-txt"><strong>Guia Matando a Fome</strong><span>Lista completa do que comer durante o jejum para nunca passar fome.</span></div>
+    </div>
+    <div class="inside-item">
+      <div class="inside-ico"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
+      <div class="inside-txt"><strong>Receitas PDF Completo</strong><span>Mais de 50 receitas práticas e deliciosas que cabem na sua janela.</span></div>
+    </div>
+    <div class="inside-item">
+      <div class="inside-ico"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
+      <div class="inside-txt"><strong>Lista de Compras Inteligente</strong><span>Gaste menos no mercado e monte refeições que aceleram o metabolismo.</span></div>
+    </div>
+    <div class="inside-item">
+      <div class="inside-ico"><svg viewBox="0 0 14 14"><polyline points="2,7 5,10 12,3"/></svg></div>
+      <div class="inside-txt"><strong>Acesso Vitalício</strong><span>Acesse pelo celular, tablet ou computador a qualquer hora.</span></div>
+    </div>
+  </div>
+
+  <!-- PRICE -->
+  <div class="price-box" id="comprar">
+    <p class="price-from">De R$ 197,00</p>
+    <div class="price-val"><sup>R$</sup>79<sub>,90</sub></div>
+    <span class="price-tag">🔥 OFERTA POR TEMPO LIMITADO</span>
+    <p class="price-installment">ou 2x de R$ 39,95 sem juros</p>
+    <p class="price-note">✅ Pagamento 100% seguro • Acesso imediato</p>
+    <br>
+    <a href="#" class="btn-cta" style="font-size:16px;padding:16px 20px">
+      QUERO GARANTIR MEU PLANO
+      <small>Clique e acesse agora mesmo</small>
+    </a>
+  </div>
+  <div class="secure-badge">
+    <img src="PV/imagens/imgcomprasegura.webp" alt="Compra Segura">
+  </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section class="how-bg">
+  <div class="how-inner">
+    <h2 class="sec-title" style="margin-bottom:6px">Como funciona a <span style="color:#3db8ac">Janela Metabólica?</span></h2>
+    <div class="divider"></div>
+    <div class="how-step">
+      <div class="how-num">1</div>
+      <div class="how-txt"><strong>Receba seu plano personalizado</strong><span>Logo após o pagamento você recebe acesso imediato ao seu plano montado com base nas suas respostas do quiz.</span></div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">2</div>
+      <div class="how-txt"><strong>Abra a sua janela metabólica</strong><span>Siga os horários exatos calculados para o seu corpo. Você come normal — só na hora certa.</span></div>
+    </div>
+    <div class="how-step">
+      <div class="how-num">3</div>
+      <div class="how-txt"><strong>Veja os resultados em 2 semanas</strong><span>A maioria das nossas alunas começa a notar diferença no espelho e na balança já nas primeiras 2 semanas.</span></div>
+    </div>
+    <br>
+    <a href="#comprar" class="btn-cta" style="font-size:15px;padding:16px 20px">
+      QUERO COMEÇAR AGORA
+    </a>
+    <div class="secure-badge" style="margin-top:12px">
+      <img src="PV/imagens/imgcomprasegura.webp" alt="Compra Segura">
+    </div>
+  </div>
+</section>
+
+<!-- DEPOIMENTOS -->
+<section class="sec">
+  <h2 class="sec-title">Veja as histórias de sucesso das<br>nossas alunas</h2>
+  <div class="divider"></div>
+  <div class="ba-wrap" id="baWrap">
+    <div class="ba-track" id="baTrack">
+      <div class="ba-slide"><img src="PV/imagens/depoimentos/dp1.jpg" alt="Resultado 1"></div>
+      <div class="ba-slide"><img src="PV/imagens/depoimentos/dp2.jpg" alt="Resultado 2"></div>
+      <div class="ba-slide"><img src="PV/imagens/depoimentos/dp3.jpg" alt="Resultado 3"></div>
+      <div class="ba-slide"><img src="PV/imagens/depoimentos/dp4.jpg" alt="Resultado 4"></div>
+    </div>
+    <div class="ba-arrows">
+      <button class="ba-btn" onclick="baMove(-1)">‹</button>
+      <button class="ba-btn" onclick="baMove(1)">›</button>
+    </div>
+  </div>
+  <div class="ba-nav" id="baDots">
+    <button class="ba-dot a" onclick="baGo(0)"></button>
+    <button class="ba-dot" onclick="baGo(1)"></button>
+    <button class="ba-dot" onclick="baGo(2)"></button>
+    <button class="ba-dot" onclick="baGo(3)"></button>
+  </div>
+</section>
+
+<!-- QUEM DESCOBRIU JÁ TEM RESULTADO -->
+<section style="background:#f0faf9;padding:32px 20px">
+  <div style="max-width:540px;margin:0 auto">
+    <h2 class="sec-title">Quem descobriu a Janela Certa<br><span style="color:#3db8ac">TEM RESULTADO ✓</span></h2>
+    <div class="divider"></div>
+    <div class="test-grid">
+      <div class="test-card-pv">
+        <img src="PV/imagens/depoimentos/dp3.jpg" alt="Depoimento">
+        <div class="test-txt">
+          <div class="test-name-pv">Maria Aparecida, 52 anos</div>
+          <div class="test-stars-pv">★★★★★</div>
+          <p class="test-body-pv">Tentei de tudo nos últimos 10 anos. Dieta, academia, shakes... Nada durava. Com a Janela Metabólica perdi 9kg em 6 semanas sem passar fome uma vez sequer. É a primeira vez que consigo manter o resultado!</p>
+        </div>
+      </div>
+      <div class="test-card-pv">
+        <img src="PV/imagens/depoimentos/dp4.jpg" alt="Depoimento">
+        <div class="test-txt">
+          <div class="test-name-pv">Fernanda Lima, 34 anos</div>
+          <div class="test-stars-pv">★★★★★</div>
+          <p class="test-body-pv">Comecei com ceticismo total. Na segunda semana já tinha perdido 3kg e minha energia estava nas alturas. Agora com 2 meses são 11kg a menos e minha roupa antiga voltou a servir. Não acredito que é tão simples!</p>
+        </div>
+      </div>
+    </div>
+    <br>
+    <a href="#comprar" class="btn-cta" style="font-size:15px;padding:16px 20px">
+      QUERO MEU RESULTADO TAMBÉM
+    </a>
+  </div>
+</section>
+
+<!-- ESCOLHA SEU PLANO -->
+<section class="sec">
+  <h2 class="sec-title">Você tem duas escolhas agora</h2>
+  <div class="divider"></div>
+  <div style="display:flex;gap:12px;margin-bottom:20px">
+    <div style="flex:1;border:2px solid #eee;border-radius:16px;padding:16px;text-align:center;opacity:.6">
+      <div style="font-size:24px;margin-bottom:8px">😔</div>
+      <p style="font-size:13px;font-weight:700;color:#888;margin-bottom:6px">Continuar do mesmo jeito</p>
+      <p style="font-size:12px;color:#aaa;line-height:1.5">Tentando sozinha, sem resultado, gastando com o que não funciona.</p>
+      <p style="font-size:14px;font-weight:800;color:#999;margin-top:10px">R$ 0,00<br><small style="font-weight:400;font-size:11px">Grátis agora,<br>caro depois</small></p>
+    </div>
+    <div style="flex:1;border:2px solid #3db8ac;border-radius:16px;padding:16px;text-align:center;position:relative">
+      <div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#3db8ac;color:#fff;font-size:11px;font-weight:700;padding:3px 12px;border-radius:20px;white-space:nowrap">RECOMENDADO</div>
+      <div style="font-size:24px;margin-bottom:8px">🏆</div>
+      <p style="font-size:13px;font-weight:700;color:#111;margin-bottom:6px">Seca Jejum Turbo</p>
+      <p style="font-size:12px;color:#555;line-height:1.5">Plano personalizado, resultados em 2 semanas, suporte completo.</p>
+      <p style="font-size:22px;font-weight:900;color:#3db8ac;margin-top:10px">R$ 79,90<br><small style="font-weight:400;font-size:11px">Acesso imediato</small></p>
+    </div>
+  </div>
+  <a href="#comprar" class="btn-cta">
+    QUERO O PLANO AGORA — R$ 79,90
+    <small>Pagamento seguro • Acesso em minutos</small>
+  </a>
+  <div class="secure-badge" style="margin-top:12px">
+    <img src="PV/imagens/imgcomprasegura.webp" alt="Compra Segura">
+  </div>
+</section>
+
+<!-- GARANTIA -->
+<section class="sec" style="padding-top:0">
+  <div class="guar-box">
+    <img src="PV/imagens/depoimentos/garantia.png" alt="Garantia 30 dias">
+    <div class="guar-txt">
+      <h3>Risco zero: 30 dias de garantia</h3>
+      <p>Se por qualquer motivo você não estiver satisfeita com o resultado, basta nos enviar um e-mail em até 30 dias e devolvemos 100% do seu dinheiro. Sem perguntas, sem burocracia.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec" style="padding-top:0">
+  <h2 class="sec-title">Ainda está com alguma dúvida?</h2>
+  <div class="divider"></div>
+  <div id="faq">
+    <div class="faq-item open">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Vou passar fome?</span>
+        <span class="faq-arrow">▲</span>
+      </div>
+      <div class="faq-a">Não. O segredo da Janela Metabólica é justamente comer na hora certa pro seu corpo. E com o Guia Matando a Fome você aprende exatamente o que consumir pra atravessar o jejum tranquila, sem aquela vontade descontrolada.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Isso realmente funciona ou é só mais uma promessa falsa?</span>
+        <span class="faq-arrow">▲</span>
+      </div>
+      <div class="faq-a">O nosso método é baseado em estudos sobre jejum intermitente e já ajudou mais de 45 mil pessoas a transformarem seus corpos. A diferença é a personalização da janela: em vez de copiar horário da internet, você segue a janela calculada pro seu corpo.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Em quanto tempo eu começo a ver resultado?</span>
+        <span class="faq-arrow">▲</span>
+      </div>
+      <div class="faq-a">A maioria das nossas alunas começa a notar diferença já nas primeiras 2 semanas. O protocolo completo é de 4 semanas, com resultados progressivos e consistentes.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Mesmo comigo que já tentei de tudo?</span>
+        <span class="faq-arrow">▲</span>
+      </div>
+      <div class="faq-a">Sim, especialmente você. Se as dietas falharam, é bem provável que você estivesse fazendo o jejum na janela errada pro seu corpo. Ao acertar a janela, tudo muda.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Preciso ir pra academia?</span>
+        <span class="faq-arrow">▲</span>
+      </div>
+      <div class="faq-a">Não. O plano funciona com a sua rotina atual. Exercício acelera os resultados, mas não é obrigatório pra você emagrecer com a sua Janela Metabólica.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Isso faz mal pra saúde? Tem efeito colateral?</span>
+        <span class="faq-arrow">▲</span>
+      </div>
+      <div class="faq-a">Não. O jejum intermitente é seguro e recomendado por profissionais de saúde no mundo todo. O plano é 100% natural, sem remédio e sem substância, apenas o ajuste dos horários das suas refeições.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Tem base científica?</span>
+        <span class="faq-arrow">▲</span>
+      </div>
+      <div class="faq-a">Sim. O jejum intermitente é estudado por instituições renomadas como Harvard, e seus benefícios para perda de peso, saúde cardiovascular e longevidade são amplamente documentados.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>Como funciona a entrega?</span>
+        <span class="faq-arrow">▲</span>
+      </div>
+      <div class="faq-a">É 100% digital. Assim que finalizar a compra, você recebe acesso imediato. Dá pra acessar do celular, tablet ou computador, a qualquer hora e de qualquer lugar.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">
+        <span>E se eu não gostar?</span>
+        <span class="faq-arrow">▲</span>
+      </div>
+      <div class="faq-a">Você tem 30 dias de garantia total. Se não estiver satisfeita por qualquer motivo, devolvemos 100% do valor. Sem perguntas e sem burocracia.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section class="footer-cta">
+  <h2>A sua janela está calculada. Falta só você decidir. ⏱️</h2>
+  <p>Mais de 45 mil pessoas já transformaram seus corpos com o Seca Jejum Turbo. A próxima pode ser você.</p>
+  <a href="#comprar" class="btn-cta-inv">
+    QUERO MEU PLANO AGORA — R$ 79,90
+  </a>
+  <div style="margin-top:14px">
+    <img src="PV/imagens/imgcomprasegura.webp" alt="Compra Segura" style="max-width:260px;margin:0 auto;filter:brightness(0) invert(1);opacity:.7">
+  </div>
+</section>
+
+<footer>
+  © 2025 Mounjaro de Pobre · Todos os direitos reservados<br>
+  <span style="font-size:11px">Este produto não é um medicamento. Consulte um profissional de saúde antes de iniciar qualquer protocolo alimentar.</span>
+</footer>
+
+<script>
+// ── CAROUSEL ──
+let baCur=0;
+const baTotal=4;
+function baMove(d){baGo((baCur+d+baTotal)%baTotal)}
+function baGo(i){
+  baCur=i;
+  document.getElementById('baTrack').style.transform=`translateX(-${i*100}%)`;
+  document.querySelectorAll('.ba-dot').forEach((d,j)=>d.classList.toggle('a',j===i));
+}
+// auto-play
+setInterval(()=>baMove(1),3500);
+
+// ── FAQ ──
+function toggleFaq(el){
+  const item=el.parentElement;
+  item.classList.toggle('open');
+}
+
+// ── SMOOTH SCROLL for anchors ──
+document.querySelectorAll('a[href="#comprar"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    document.getElementById('comprar').scrollIntoView({behavior:'smooth'});
+  });
+});
+</script>
+</body>
+</html>
