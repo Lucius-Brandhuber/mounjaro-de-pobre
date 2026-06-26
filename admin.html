@@ -249,12 +249,17 @@ async function init(){
 async function sync(){
   document.getElementById('syncTxt').textContent = 'Sincronizando…';
   const remote = await fetchGAS();
-  const merged = merge(remote, getLocal().map(normalizeEvent));
-  localStorage.setItem(CKEY, JSON.stringify(merged));
-  _ev = merged;
+  const local  = getLocal().map(normalizeEvent);
+  // só sobrescreve se remote trouxe dados, para não limpar cache com fetch falho
+  const base   = remote.length > 0 ? remote : _ev.length > 0 ? _ev : [];
+  const merged = merge(base.slice(), local);
+  if(merged.length > 0){
+    localStorage.setItem(CKEY, JSON.stringify(merged));
+    _ev = merged;
+  }
   document.getElementById('syncTxt').textContent = '';
   render();
-  toast('Dados atualizados ✓');
+  toast(remote.length > 0 ? `Dados atualizados ✓ (${remote.length} eventos)` : 'Usando cache local');
 }
 
 async function doRefresh(){ await sync(); }
@@ -442,11 +447,12 @@ function renderFunil(sc){
 /* ─── EVENTOS TABLE ─── */
 function renderEventos(){
   const sessions = {};
-  _ev.forEach(e=>{
-    if(!sessions[e.s]) sessions[e.s]={sid:e.s,first:e.t,ref:e.ref||'',evs:[]};
-    if(e.t<sessions[e.s].first) sessions[e.s].first=e.t;
-    sessions[e.s].evs.push(e);
-    if(e.ref) sessions[e.s].ref=e.ref;
+  _ev.filter(e=>e.s).forEach(e=>{
+    const sid = e.s;
+    if(!sessions[sid]) sessions[sid]={sid,first:e.t||0,ref:e.ref||'',evs:[]};
+    if((e.t||0)<sessions[sid].first) sessions[sid].first=e.t||0;
+    sessions[sid].evs.push(e);
+    if(e.ref) sessions[sid].ref=e.ref;
   });
 
   const rows = Object.values(sessions).sort((a,b)=>b.first-a.first);
@@ -458,7 +464,7 @@ function renderEventos(){
   const fDate= t=>new Date(t).toLocaleDateString('pt-BR');
 
   const trows = slice.map(s=>{
-    const av  = avs[s.sid.charCodeAt(0)%avs.length];
+    const av  = avs[(s.sid||'a').charCodeAt(0)%avs.length];
     const src = s.ref||'Direct';
     // build one cell per view/answer/checkout event, all steps
     const evsSorted = s.evs.slice().sort((a,b)=>a.t-b.t);
