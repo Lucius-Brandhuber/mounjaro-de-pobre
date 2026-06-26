@@ -12,6 +12,10 @@ fbq("init","1576085237275077");fbq("track","PageView");
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Mounjaro de Pobre – Quiz Personalizado de Jejum</title>
+<link rel="preconnect" href="https://connect.facebook.net">
+<link rel="dns-prefetch" href="https://cdn.utmify.com.br">
+<link rel="preload" as="image" href="imagens%20quiz/imagem%20inicial.jpg">
+<link rel="preload" as="image" href="logos/nova%20logo.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#fff;width:100%;min-height:100vh}
@@ -209,7 +213,7 @@ function buildScreens(g){
       {text:'Peito',img:IMGS+'m18.png'},{text:'Pernas',img:IMGS+'m29.png'}
     ]},
     // 7: melhor forma
-    {type:'single-char',title:'Faz quanto tempo que você se sentiu na sua melhor forma?',char:h?IMGS+'h20.webp':IMGS+'m20.png',bigChar:!h?IMGS+'m24.png':null,options:[
+    {type:'single-char',title:'Faz quanto tempo que você se sentiu na sua melhor forma?',char:h?IMGS+'h20.webp':IMGS+'m20.png',bigChar:!h?IMGS+'m24.jpg':null,options:[
       {text:'0 a 6 meses atrás'},{text:'7 a 12 meses atrás'},{text:'1 a 3 anos atrás'},{text:'Mais de 3 anos atrás'}
     ]},
     // 8: interstitial metabolismo
@@ -261,11 +265,11 @@ function buildScreens(g){
       {text:'Não paro nem no fim de semana!',emoji:'💪'}
     ]},
     // 18: exercício
-    {type:'single-char',title:'Com que frequência você se exercita?',char:h?IMGS+'h21.webp':IMGS+'m21.png',bigChar:!h?IMGS+'m25.png':null,options:[
+    {type:'single-char',title:'Com que frequência você se exercita?',char:h?IMGS+'h21.webp':IMGS+'m21.png',bigChar:!h?IMGS+'m25.jpg':null,options:[
       {text:'Quase todos os dias'},{text:'Várias vezes por semana'},{text:'Várias vezes por mês'},{text:'Nunca'}
     ]},
     // 19: rotina trabalho
-    {type:'single-char',title:'Como é a sua rotina de trabalho?',char:h?IMGS+'h22.webp':IMGS+'m22.png',bigChar:!h?IMGS+'m26.png':null,options:[
+    {type:'single-char',title:'Como é a sua rotina de trabalho?',char:h?IMGS+'h22.webp':IMGS+'m22.png',bigChar:!h?IMGS+'m26.jpg':null,options:[
       {text:'das 09:00 às 18:00'},{text:'Turnos noturnos'},{text:'Meu horário é flexível'},{text:h?'Estou aposentado':'Estou aposentada'}
     ]},
     // 20: dia a dia
@@ -287,12 +291,12 @@ function buildScreens(g){
       {text:'1 a 2 vezes por semana',emoji:'🙂'},{text:'Mais de uma vez por mês',emoji:'👍'}
     ]},
     // 23: sono
-    {type:'single-char',title:'Quantas horas você costuma dormir?',char:h?IMGS+'h23.webp':IMGS+'m23.png',bigChar:!h?IMGS+'m27.png':null,options:[
+    {type:'single-char',title:'Quantas horas você costuma dormir?',char:h?IMGS+'h23.webp':IMGS+'m23.png',bigChar:!h?IMGS+'m27.jpg':null,options:[
       {text:'Durmo pouco (menos de 5 horas)'},{text:'Eu consigo dormir um pouco (5-6 horas)'},
       {text:'Eu durmo muito e bem (7-8 horas)'},{text:'Gosto de dormir até mais tarde (mais de 8 horas)'}
     ]},
     // 24: água
-    {type:'single-char',title:'Qual é a sua ingestão diária de água?',char:h?IMGS+'h24.webp':IMGS+'m24.png',options:[
+    {type:'single-char',title:'Qual é a sua ingestão diária de água?',char:h?IMGS+'h24.webp':IMGS+'m24.jpg',options:[
       {text:'Eu só tomo café ou chá'},{text:'Cerca de 2 copos'},{text:'2 a 6 copos'},{text:'Mais de 6 copos'}
     ]},
     // 25: problemas
@@ -308,7 +312,7 @@ function buildScreens(g){
       {text:'Nenhuma das acima',emoji:'❌'}
     ]},
     // 27: rosto
-    {type:'rosto',title:'Não é só o seu corpo! Veja como o Jejum pode mudar o seu rosto!',img:h?IMGS+'h28.png':IMGS+'m32.png'},
+    {type:'rosto',title:'Não é só o seu corpo! Veja como o Jejum pode mudar o seu rosto!',img:h?IMGS+'h28.jpg':IMGS+'m32.jpg'},
     // 28: acontecimentos
     {type:'multi-emoji',title:'Algum desses acontecimentos fez você ganhar peso nos últimos anos?',options:[
       {text:'Casamento ou relacionamento',emoji:'👰'},{text:'Rotina corrida com trabalho ou família',emoji:'🤕'},
@@ -331,7 +335,7 @@ function buildScreens(g){
     // 33: idade exata
     {type:'age-input'},
     // 34: IMC resumo
-    {type:'bmi-result',img:h?IMGS+'h29.webp':IMGS+'m33.png'},
+    {type:'bmi-result',img:h?IMGS+'h29.webp':IMGS+'m33.jpg'},
     // 35: evento
     {type:'single-emoji',title:'Você tem algum evento importante chegando?',sub:'Ter algo para esperar pode ser uma grande motivação para alcançar o seu objetivo!',options:[
       {text:'Férias',emoji:'✈️'},{text:'Casamento',emoji:'👰'},{text:'Feriado',emoji:'🏖️'},
@@ -402,7 +406,7 @@ function renderLanding(app){
     <h1>Este <em>Método de Jejum Adaptado</em> está ajudando Homens e Mulheres a <em>eliminar até 10kg em 21 dias</em> sem passar fome</h1>
     <p>Responda esse teste gratuito de apenas 2 minutos e aprenda 👇</p>
   </div>
-  <img class="land-img" src="${IMGS}imagem inicial.png" alt="Antes e Depois">
+  <img class="land-img" src="${IMGS}imagem inicial.jpg" alt="Antes e Depois">
   <button class="land-cta" onclick="nextStep()">QUERO APRENDER TAMBÉM! 🎉</button>
 </div>`;
 }
@@ -415,11 +419,11 @@ function renderGender(app){
   <h2 class="stitle">Jejum Intermitente para:</h2>
   <div class="gcards">
     <div class="gcard" onclick="selectGender('homem')">
-      <img src="${IMGS}h1.png" alt="Homem">
+      <img src="${IMGS}h1.jpg" alt="Homem">
       <div class="gcard-lbl">Homem <span class="arr">›</span></div>
     </div>
     <div class="gcard" onclick="selectGender('mulher')">
-      <img src="${IMGS}m1.png" alt="Mulher">
+      <img src="${IMGS}m1.jpg" alt="Mulher">
       <div class="gcard-lbl">Mulher <span class="arr">›</span></div>
     </div>
   </div>
@@ -438,7 +442,7 @@ function renderSingleImage(sc,si){
   let opts=sc.options.map((o,i)=>`
     <div class="opt ${saved===i?'sel':''}" onclick="pickSingle(${si},${i},this)">
       <span class="otxt">${o.text}</span>
-      <img class="oimg" src="${o.img}" alt="${o.text}" onerror="this.style.display='none'">
+      <img class="oimg" loading="lazy" src="${o.img}" alt="${o.text}" onerror="this.style.display='none'">
     </div>`).join('');
   return `<div class="screen"><h2 class="stitle">${sc.title}</h2><div class="opts">${opts}</div></div>`;
 }
@@ -461,7 +465,7 @@ function renderSocialProof(sc,si){
     <div class="sp">
       <div class="sp-num">${sc.num}</div>
       <div class="sp-sub">${sc.sub}</div>
-      <img class="sp-img" src="${sc.img}" alt="pessoas" onerror="this.style.display='none'">
+      <img class="sp-img" loading="lazy" src="${sc.img}" alt="pessoas" onerror="this.style.display='none'">
     </div>
     <button class="btn-cont" onclick="nextStep()">Continuar</button>
   </div>`;
@@ -472,7 +476,7 @@ function renderInterstitial(sc,si){
   let sub=sc.sub?`<p class="inti-sub">${sc.sub}</p>`:'';
   return `<div class="screen">
     <h2 class="stitle">${sc.title}</h2>
-    <img class="inti-chart" src="${sc.chartImg}" alt="gráfico" onerror="this.style.display='none'">
+    <img class="inti-chart" loading="lazy" src="${sc.chartImg}" alt="gráfico" onerror="this.style.display='none'">
     ${sub}
     <button class="btn-cont" onclick="nextStep()">Continuar</button>
   </div>`;
