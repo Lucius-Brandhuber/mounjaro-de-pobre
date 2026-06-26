@@ -422,6 +422,7 @@ function render(){
   }
   app.innerHTML=html;
   if(sc.type==='loading')startLoading();
+  if(sc.type==='wpp')startWppAuto();
 }
 
 /* -------- LANDING -------- */
@@ -622,6 +623,24 @@ function renderRosto(sc,si){
 }
 
 /* -------- DEPOIMENTOS WHATSAPP -------- */
+var _wppTimer=null;
+function startWppAuto(){
+  if(_wppTimer){clearInterval(_wppTimer);_wppTimer=null;}
+  var track=document.querySelector('.wpp-track');
+  if(!track)return;
+  var cards=track.querySelectorAll('.wpp-card');
+  if(cards.length<2)return;
+  var idx=0,paused=false,resumeT=null;
+  function step(){return (cards[1].offsetLeft-cards[0].offsetLeft)||(cards[0].offsetWidth+14);}
+  function pause(){paused=true;if(resumeT)clearTimeout(resumeT);resumeT=setTimeout(function(){idx=Math.round(track.scrollLeft/step());paused=false;},6000);}
+  ['pointerdown','touchstart','wheel'].forEach(function(ev){track.addEventListener(ev,pause,{passive:true});});
+  _wppTimer=setInterval(function(){
+    if(!document.body.contains(track)){clearInterval(_wppTimer);_wppTimer=null;return;}
+    if(paused)return;
+    idx=(idx+1)%cards.length;
+    track.scrollTo({left:idx*step(),behavior:'smooth'});
+  },3000);
+}
 function renderWpp(si){
   const D='depoimentoswhatsapp/';
   const order = state.gender==='homem'
