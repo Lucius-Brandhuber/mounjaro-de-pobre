@@ -935,8 +935,16 @@ function setWUnit(u){
     }
     return _sid;
   }
+  function seenKey(step){ return 'mdjp_seen_'+sid()+'_'+step; }
+  function hasSeen(step){ return localStorage.getItem(seenKey(step))==='1'; }
+  function markSeen(step){ try{localStorage.setItem(seenKey(step),'1');}catch(e){} }
+
   function push(ev,data){
     try{
+      // deduplicate: skip view events already sent for this session+step
+      if(ev==='view' && hasSeen(data.step)) return;
+      if(ev==='view') markSeen(data.step);
+
       var obj={ev:ev,t:Date.now(),s:sid()};
       for(var k in data)obj[k]=data[k];
       // localStorage backup
