@@ -240,7 +240,7 @@ async function fetchGAS(){
 }
 
 async function init(){
-  const cached = merge(getCache(), getLocal());
+  const cached = merge(getCache(), getLocal()).map(normalizeEvent);
   if(cached.length){ _ev = cached; render(); }
   sync();
   initVendas();
@@ -249,7 +249,7 @@ async function init(){
 async function sync(){
   document.getElementById('syncTxt').textContent = 'Sincronizando…';
   const remote = await fetchGAS();
-  const merged = merge(remote, getLocal());
+  const merged = merge(remote, getLocal().map(normalizeEvent));
   localStorage.setItem(CKEY, JSON.stringify(merged));
   _ev = merged;
   document.getElementById('syncTxt').textContent = '';
