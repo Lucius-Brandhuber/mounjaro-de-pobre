@@ -216,11 +216,26 @@ function merge(a, b){
   return a;
 }
 
+function normalizeEvent(e){
+  return {
+    ev:     e.ev     || e.evento    || '',
+    s:      e.s      || e.session   || '',
+    step:   e.step   != null ? e.step : '',
+    t:      e.t      || (e.data ? new Date(e.data).getTime() : 0),
+    name:   e.name   || e.nome      || '',
+    gender: e.gender || e.genero    || '',
+    ans:    e.ans    || e.resposta  || '',
+    ms:     e.ms     || 0,
+    ref:    e.ref    || e.referrer  || '',
+    ua:     e.ua     || ''
+  };
+}
+
 async function fetchGAS(){
   try{
     const r = await fetch(GAS);
     const d = await r.json();
-    return Array.isArray(d) ? d : [];
+    return Array.isArray(d) ? d.map(normalizeEvent) : [];
   }catch(e){ return []; }
 }
 
