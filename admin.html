@@ -284,8 +284,8 @@ function render(){
   renderKPIs(sc, checkouts);
   renderArea(views);
   renderFunil(sc);
-  renderEventos();
-  renderResumo(sc, views, answers, checkouts, vViews);
+  try{ renderEventos(); }catch(err){ document.getElementById('tab-eventos').innerHTML=`<p style="color:red;padding:16px">Erro: ${err.message}</p>`; console.error('renderEventos',err); }
+  try{ renderResumo(sc, views, answers, checkouts, vViews); }catch(err){ document.getElementById('tab-resumo').innerHTML=`<p style="color:red;padding:16px">Erro: ${err.message}</p>`; console.error('renderResumo',err); }
   updateDate();
 }
 
