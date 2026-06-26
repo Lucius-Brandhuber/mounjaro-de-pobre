@@ -217,17 +217,29 @@ function buildDash(){
   buildCheckout();
 }
 
+/* ---------- UNIQUE SESSIONS PER STEP ---------- */
+function uniquePerStep(views){
+  // For each step, count unique session IDs (deduplicate back-navigation)
+  const map={};
+  views.forEach(e=>{
+    if(!map[e.step])map[e.step]=new Set();
+    map[e.step].add(e.s);
+  });
+  const counts={};
+  Object.keys(map).forEach(k=>{ counts[k]=map[k].size; });
+  return counts;
+}
+
 /* ---------- KPIs ---------- */
 function buildKPIs(){
-  const sessions = new Set(_views.map(e=>e.s)).size;
-  const stepCounts = {};
-  _views.forEach(e=>{ stepCounts[e.step]=(stepCounts[e.step]||0)+1; });
+  const stepCounts = uniquePerStep(_views);
 
-  const pageviews = stepCounts[0]||0;
-  const leads = stepCounts[1]||0;
-  const qualified = stepCounts[10]||0; // halfway ~step 10
-  const completed = stepCounts[19]||stepCounts[18]||0;
-  const interacao = pageviews>0 ? ((leads/pageviews)*100).toFixed(1)+'%' : '0%';
+  // step 0=landing, 1=gender, 2-40=quiz screens (39 screens), 40=final-result
+  const pageviews  = stepCounts[0]||0;
+  const leads      = stepCounts[1]||0;       // escolheu gênero
+  const qualified  = stepCounts[21]||0;      // ~50% do funil (step 2+19)
+  const completed  = stepCounts[40]||0;      // final-result (último screen, index 38)
+  const interacao  = pageviews>0 ? ((leads/pageviews)*100).toFixed(1)+'%' : '0%';
 
   document.getElementById('kpiRow').innerHTML = [
     {label:'Pageviews',val:pageviews,sub:'Visitantes que acessaram o funil'},
@@ -292,31 +304,51 @@ function buildAreaChart(){
 
 /* ---------- FUNNEL ---------- */
 const STEPS = [
-  {step:0, label:'Landing Page'},
-  {step:1, label:'Escolha de Gênero'},
-  {step:2, label:'Faixa Etária'},
-  {step:3, label:'Social Proof'},
-  {step:4, label:'Objetivo Principal'},
-  {step:5, label:'Físico Atual'},
-  {step:6, label:'Interstitial'},
-  {step:7, label:'Objetivo Corporal'},
-  {step:8, label:'Áreas do Corpo'},
-  {step:9, label:'Melhor Forma'},
-  {step:10, label:'Metabolismo'},
+  {step:0,  label:'Landing Page'},
+  {step:1,  label:'Escolha de Gênero'},
+  {step:2,  label:'Faixa Etária'},
+  {step:3,  label:'Social Proof'},
+  {step:4,  label:'Objetivo Principal'},
+  {step:5,  label:'Físico Atual'},
+  {step:6,  label:'Interstitial Forma'},
+  {step:7,  label:'Objetivo Corporal'},
+  {step:8,  label:'Áreas do Corpo'},
+  {step:9,  label:'Melhor Forma (tempo)'},
+  {step:10, label:'Interstitial Metabolismo'},
   {step:11, label:'Tipo Físico'},
   {step:12, label:'Conhecimento Jejum'},
-  {step:13, label:'Problemas de Saúde'},
-  {step:14, label:'Experiência Dieta'},
-  {step:15, label:'Motivação'},
-  {step:16, label:'Rotina de Trabalho'},
-  {step:17, label:'Horas de Sono'},
-  {step:18, label:'Carregando...'},
-  {step:19, label:'Resultado / Projeção'},
+  {step:13, label:'Café da Manhã'},
+  {step:14, label:'Almoço'},
+  {step:15, label:'Jantar'},
+  {step:16, label:'Restrição Alimentar'},
+  {step:17, label:'Alimentos Preferidos'},
+  {step:18, label:'Comer em Casa/Fora'},
+  {step:19, label:'Pausa no Fim de Semana'},
+  {step:20, label:'Frequência de Exercícios'},
+  {step:21, label:'Rotina de Trabalho'},
+  {step:22, label:'Dia a Dia'},
+  {step:23, label:'Fôlego'},
+  {step:24, label:'Caminhada'},
+  {step:25, label:'Horas de Sono'},
+  {step:26, label:'Ingestão de Água'},
+  {step:27, label:'Problemas Físicos'},
+  {step:28, label:'Hábitos Ruins'},
+  {step:29, label:'Transformação do Rosto'},
+  {step:30, label:'Eventos que Geraram Peso'},
+  {step:31, label:'Motivação'},
+  {step:32, label:'Altura'},
+  {step:33, label:'Peso Atual'},
+  {step:34, label:'Peso Desejado'},
+  {step:35, label:'Idade'},
+  {step:36, label:'Resultado IMC'},
+  {step:37, label:'Evento Importante'},
+  {step:38, label:'Projeção de Perda'},
+  {step:39, label:'Carregando...'},
+  {step:40, label:'✅ Resultado Final'},
 ];
 
 function buildFunnel(){
-  const stepCounts={};
-  _views.forEach(e=>{ stepCounts[e.step]=(stepCounts[e.step]||0)+1; });
+  const stepCounts = uniquePerStep(_views);
 
   const maxCount = stepCounts[0]||1;
   const visibleSteps = STEPS.filter(s=>stepCounts[s.step]>0);
@@ -343,7 +375,8 @@ function showDetail(step, label, el){
   document.querySelectorAll('.funnel-item').forEach(li=>li.classList.remove('active'));
   el.classList.add('active');
 
-  const views = _views.filter(e=>e.step===step);
+  const stepViews = _views.filter(e=>e.step===step);
+  const uniqueSessions = new Set(stepViews.map(e=>e.s)).size;
   const answers = _answers.filter(e=>e.step===step);
 
   const times = answers.map(e=>e.ms).filter(Boolean);
@@ -362,8 +395,7 @@ function showDetail(step, label, el){
   const maxAns=entries[0]?entries[0][1]:1;
 
   // Drop-off
-  const stepCounts={};
-  _views.forEach(e=>{ stepCounts[e.step]=(stepCounts[e.step]||0)+1; });
+  const stepCounts=uniquePerStep(_views);
   const thisCount=stepCounts[step]||0;
   const nextStep=STEPS.find(s=>s.step>step);
   const nextCount=nextStep?stepCounts[nextStep.step]||0:0;
@@ -373,7 +405,7 @@ function showDetail(step, label, el){
     <div class="d-title">${label}</div>
     <div class="d-sub">Etapa ${step} do funil</div>
     <div class="d-stat-row">
-      <div class="d-stat"><div class="d-stat-val">${views.length}</div><div class="d-stat-label">Visualizações</div></div>
+      <div class="d-stat"><div class="d-stat-val">${uniqueSessions}</div><div class="d-stat-label">Sessões únicas</div></div>
       <div class="d-stat"><div class="d-stat-val">${answers.length}</div><div class="d-stat-label">Respostas</div></div>
       <div class="d-stat"><div class="d-stat-val">${avgSec!=null?avgSec+'s':'—'}</div><div class="d-stat-label">Tempo médio</div></div>
       <div class="d-stat"><div class="d-stat-val">${dropPct}</div><div class="d-stat-label">Abandono</div></div>
