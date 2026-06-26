@@ -492,11 +492,12 @@ function renderEventos(){
 
 /* ─── RESUMO ─── */
 function renderResumo(sc, views, answers, checkouts, vViews){
-  // Gênero
+  // Gênero — usar answer do step 1 (ans = 'homem'/'mulher')
   const gMap={};
-  views.filter(e=>+e.step===1).forEach(e=>{
-    if(!gMap[e.gender||'N/A']) gMap[e.gender||'N/A']=new Set();
-    gMap[e.gender||'N/A'].add(e.s);
+  answers.filter(e=>+e.step===1).forEach(e=>{
+    const g=e.ans||e.gender||'N/A';
+    if(!gMap[g]) gMap[g]=new Set();
+    gMap[g].add(e.s);
   });
   const gTotal=Object.values(gMap).reduce((a,s)=>a+s.size,0)||1;
   const gRows=Object.entries(gMap).sort((a,b)=>b[1].size-a[1].size).map(([g,s])=>`
