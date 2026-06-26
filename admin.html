@@ -669,7 +669,7 @@ function renderVendas(){
 
   document.getElementById('vendasBody').innerHTML = `
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:8px">
-      ${kpis.map(k=>`<div class="kpi-card"><div class="kpi-ico">${k.ico}</div><div class="kpi-val">${k.v}</div><div class="kpi-lbl">${k.lbl}</div></div>`).join('')}
+      ${kpis.map(k=>`<div class="kc"><div class="kc-ico">${k.ico}</div><div class="kc-lbl">${k.lbl}</div><div class="kc-val">${k.v}</div></div>`).join('')}
     </div>
     ${metodos}
     <div style="margin-top:20px;overflow-x:auto">
