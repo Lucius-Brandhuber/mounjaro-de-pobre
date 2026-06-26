@@ -269,11 +269,15 @@ function render(){
 
 /* ─── KPIs ─── */
 function renderKPIs(sc, checkouts){
-  const pv   = sc['0']||0;
+  // total unique sessions across ALL steps (more reliable than step 0 alone)
+  const allViews = _ev.filter(e=>e.ev==='view' && e.step!=='vendas');
+  const totalUniq = new Set(allViews.map(e=>e.s)).size || 1;
+  const pv   = sc['0'] || totalUniq;
   const lds  = sc['1']||0;
   const qual = sc['21']||0;
   const done = sc['40']||0;
-  const inter= pv>0?((lds/pv)*100).toFixed(1)+'%':'0%';
+  const interRaw = (lds / pv) * 100;
+  const inter = pv>0 ? Math.min(interRaw, 100).toFixed(1)+'%' : '0%';
   document.getElementById('kpiRow').innerHTML=[
     {ico:'👁',lbl:'Pageviews',v:pv,sub:'Visitantes que acessaram o funil'},
     {ico:'🙋',lbl:'Leads Adquiridos',v:lds,sub:'Iniciaram alguma interação'},
