@@ -485,7 +485,11 @@ function toggleFaq(el){
   document.querySelectorAll('a[href="https://checkout.payt.com.br/c/4MA9W6"]').forEach(function(a){
     a.addEventListener('click',function(){
       try{
-        var obj={ev:'checkout_click',t:Date.now(),s:getSid(),ref:document.referrer?document.referrer.split('/')[2]:'',ua:navigator.userAgent};
+        var sid=getSid();
+        var seenKey='mdjp_seen_'+sid+'_checkout';
+        if(localStorage.getItem(seenKey)==='1') return;
+        localStorage.setItem(seenKey,'1');
+        var obj={ev:'checkout_click',t:Date.now(),s:sid,ref:document.referrer?document.referrer.split('/')[2]:'',ua:navigator.userAgent};
         try{var arr=JSON.parse(localStorage.getItem(KEY)||'[]');arr.push(obj);localStorage.setItem(KEY,JSON.stringify(arr));}catch(e){}
         if(navigator.sendBeacon){navigator.sendBeacon(GAS,JSON.stringify(obj));}
         else{fetch(GAS,{method:'POST',body:JSON.stringify(obj),mode:'no-cors'}).catch(function(){});}
