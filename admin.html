@@ -136,10 +136,33 @@ tr:hover td{background:#fafbff}
 /* ── RESPONSIVE ── */
 @media(max-width:1200px){.kpi-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:900px){
-  .kpi-grid{grid-template-columns:repeat(2,1fr)}
   .two-col,.three-col{grid-template-columns:1fr}
   .content{padding:14px 16px}
   .topbar{padding:0 16px;gap:8px}
+}
+@media(max-width:600px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .topbar{height:auto;flex-wrap:wrap;padding:10px 14px;gap:8px}
+  .tb-logo{width:100%;font-size:15px}
+  .tb-spacer{display:none}
+  .tb-sync{display:none}
+  .tb-date{display:none}
+  .tb-status{font-size:11px;padding:5px 11px}
+  .tb-btn{font-size:12px;padding:8px 12px;margin-left:auto}
+  .content{padding:12px}
+  .card-body{padding:12px 14px 18px}
+  .card-hdr{padding:14px 16px 0}
+  .card-sub{font-size:11px}
+  .kpi{padding:15px 13px}
+  .kpi-ico{width:34px;height:34px;font-size:17px;margin-bottom:9px}
+  .kpi-val{font-size:22px}
+  .tabs{width:100%;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .mc{padding:14px}
+  .bar-lbl{width:78px;font-size:11px}
+}
+@media(max-width:380px){
+  .kpi-val{font-size:20px}
+  .kpi-lbl{font-size:10px}
 }
 </style>
 </head>
