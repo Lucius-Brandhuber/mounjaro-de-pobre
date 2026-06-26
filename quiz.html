@@ -780,20 +780,24 @@ function renderLoading(){
 }
 
 function startLoading(){
-  let p=0;
+  const TOTAL=10000; // 10 seconds
+  const TICK=100;
   const statuses=['Preparando...','Analisando seu perfil...','Calculando seu metabolismo...','Montando seu plano alimentar...','Personalizando suas refeições...','Finalizando...'];
+  let elapsed=0;
   const iv=setInterval(()=>{
-    p+=Math.random()*3+1;
-    if(p>=100){p=100;clearInterval(iv);setTimeout(()=>nextStep(),800);}
+    elapsed+=TICK;
+    const p=Math.min(100,elapsed/TOTAL*100);
     const bar=document.getElementById('loadbar');
     const pct=document.getElementById('loadpct');
     const st=document.getElementById('loadstatus');
     if(bar)bar.style.width=p.toFixed(0)+'%';
     if(pct)pct.textContent=p.toFixed(0)+'%';
     if(st)st.textContent=statuses[Math.min(statuses.length-1,Math.floor(p/20))];
-    const ti=Math.floor(p/35);
-    showTest(ti<testimonials.length?ti:0);
-  },200);
+    // show each testimonial for 25% of the duration (2.5s each)
+    const ti=Math.min(testimonials.length-1,Math.floor(p/(100/testimonials.length)));
+    showTest(ti);
+    if(elapsed>=TOTAL){clearInterval(iv);setTimeout(()=>nextStep(),300);}
+  },TICK);
 }
 
 function showTest(i){
