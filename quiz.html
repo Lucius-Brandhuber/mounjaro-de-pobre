@@ -52,6 +52,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:
 /* Char + options layout */
 .crow{display:flex;gap:14px;align-items:flex-start}
 .crow .cimg{width:100px;flex-shrink:0;object-fit:contain}
+.crow .cimg.big{width:clamp(130px,35vw,200px);height:auto;object-fit:cover;border-radius:14px}
 .crow .copts{flex:1;display:flex;flex-direction:column;gap:10px}
 /* Social proof */
 .sp{text-align:center;padding:32px 0 8px}
@@ -195,11 +196,11 @@ function buildScreens(g){
       {text:'Braços',img:IMGS+'h15.webp'},{text:'Peito',img:IMGS+'h16.webp'},
       {text:'Barriga',img:IMGS+'h17.webp'},{text:'Pernas',img:IMGS+'h18.webp'},{text:'Costas',img:IMGS+'h19.webp'}
     ]:[
-      {text:'Barriga',img:IMGS+'m16.png'},{text:'Bunda',img:IMGS+'m17.png'},
-      {text:'Peito',img:IMGS+'m18.png'},{text:'Pernas',img:IMGS+'m19.png'}
+      {text:'Barriga',img:IMGS+'m16.png'},{text:'Bunda',img:IMGS+'hbunda.png'},
+      {text:'Peito',img:IMGS+'m18.png'},{text:'Pernas',img:IMGS+'m29.png'}
     ]},
     // 7: melhor forma
-    {type:'single-char',title:'Faz quanto tempo que você se sentiu na sua melhor forma?',char:h?IMGS+'h20.webp':IMGS+'m20.png',options:[
+    {type:'single-char',title:'Faz quanto tempo que você se sentiu na sua melhor forma?',char:h?IMGS+'h20.webp':IMGS+'m20.png',bigChar:!h?IMGS+'m24.png':null,options:[
       {text:'0 a 6 meses atrás'},{text:'7 a 12 meses atrás'},{text:'1 a 3 anos atrás'},{text:'Mais de 3 anos atrás'}
     ]},
     // 8: interstitial metabolismo
@@ -489,9 +490,11 @@ function renderSingleChar(sc,si){
     <div class="opt ${saved===i?'sel':''}" onclick="pickSingle(${si},${i},this)">
       <span class="otxt">${o.text}</span>
     </div>`).join('');
+  const imgSrc=sc.bigChar||sc.char;
+  const imgClass=sc.bigChar?'cimg big':'cimg';
   return `<div class="screen"><h2 class="stitle">${sc.title}</h2>
     <div class="crow">
-      <img class="cimg" src="${sc.char}" alt="" onerror="this.style.display='none'">
+      <img class="${imgClass}" src="${imgSrc}" alt="" onerror="this.style.display='none'">
       <div class="copts">${opts}</div>
     </div></div>`;
 }
