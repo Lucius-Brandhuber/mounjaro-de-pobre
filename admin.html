@@ -32,6 +32,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .tb-date{font-size:12px;color:#666;background:#f5f7fa;padding:6px 12px;border-radius:20px}
 .tb-btn{padding:8px 14px;border:1px solid #e5e7eb;border-radius:10px;background:#fff;font-size:13px;cursor:pointer;color:#333;font-weight:500;transition:.15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
 .tb-btn:hover{background:#f5f7fa}
+.tb-status{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:6px 12px;border-radius:20px;background:#f5f7fa;color:#555;white-space:nowrap}
+.tb-status .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;animation:pulse 2s infinite}
 
 /* ── CONTENT ── */
 .content{max-width:1400px;margin:0 auto;padding:22px 28px}
@@ -45,8 +47,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 
 /* ── KPI GRID ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:18px}
-.kpi{background:#fff;border-radius:14px;border:1px solid #e8ecf0;padding:18px 16px}
-.kpi-ico{font-size:20px;margin-bottom:8px}
+.kpi{background:#fff;border-radius:14px;border:1px solid #e8ecf0;padding:18px 16px;transition:transform .18s,box-shadow .18s}
+.kpi:hover{transform:translateY(-2px);box-shadow:0 10px 28px rgba(40,60,120,.08)}
+.kpi-ico{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:19px;margin-bottom:11px;background:#eef4ff}
 .kpi-val{font-size:26px;font-weight:900;color:#1a1a2e;line-height:1}
 .kpi-lbl{font-size:11px;color:#aaa;margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
 .kpi-sub{font-size:11px;color:#ccc;margin-top:2px}
@@ -161,6 +164,7 @@ tr:hover td{background:#fafbff}
     <div class="tb-logo">🔥 <span>Mounjaro</span> Admin</div>
     <div class="tb-spacer"></div>
     <span class="tb-sync" id="syncTxt"></span>
+    <span class="tb-status" id="capiStatus"></span>
     <div class="tb-date">📅 <span id="dateRange">—</span></div>
     <button class="tb-btn" onclick="doRefresh()">↻ Atualizar</button>
   </div>
@@ -177,7 +181,7 @@ tr:hover td{background:#fafbff}
         <span class="card-sub" id="dateRange2"></span>
       </div>
       <div class="card-body">
-        <div id="funnelMini" style="margin-bottom:16px"></div>
+        <div id="funnelMini" style="margin-bottom:16px;overflow-x:auto;padding-bottom:4px"></div>
         <svg id="areaChart" height="150" style="display:block;width:100%"></svg>
       </div>
     </div>
@@ -189,12 +193,14 @@ tr:hover td{background:#fafbff}
           <button class="tab active" onclick="switchTab('funil',this)">📊 Funil</button>
           <button class="tab" onclick="switchTab('eventos',this)">📋 Eventos</button>
           <button class="tab" onclick="switchTab('resumo',this)">📈 Resumo</button>
+          <button class="tab" onclick="switchTab('trafego',this)">🎯 Tráfego</button>
           <button class="tab" onclick="switchTab('vendas',this)">💰 Vendas</button>
           <button class="tab" onclick="switchTab('capi',this)">⚡ Meta CAPI</button>
         </div>
         <div id="tab-funil"></div>
         <div id="tab-eventos" style="display:none"></div>
         <div id="tab-resumo" style="display:none"></div>
+        <div id="tab-trafego" style="display:none"></div>
         <div id="tab-vendas" style="display:none"></div>
         <div id="tab-capi" style="display:none"></div>
       </div>
@@ -231,9 +237,46 @@ function toast(msg){
   setTimeout(()=>el.classList.remove('show'),3000);
 }
 
+/* ── PARSERS ── */
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function qp(url,k){
+  try{
+    const q=(url||'').split('?')[1];if(!q)return'';
+    const m=q.match(new RegExp('(?:^|&)'+k+'=([^&]*)'));
+    return m?decodeURIComponent(m[1].replace(/\+/g,' ')):'';
+  }catch(e){return'';}
+}
+function deviceOf(ua){
+  if(!ua)return'Desconhecido';
+  if(/ipad|tablet|(android(?!.*mobile))/i.test(ua))return'Tablet';
+  if(/mobile|iphone|ipod|android/i.test(ua))return'Mobile';
+  return'Desktop';
+}
+function browserOf(ua){
+  if(!ua)return'—';
+  if(/FBAN|FBAV|FB_IAB/i.test(ua))return'App Facebook';
+  if(/Instagram/i.test(ua))return'App Instagram';
+  if(/Edg/i.test(ua))return'Edge';
+  if(/OPR|Opera/i.test(ua))return'Opera';
+  if(/CriOS|Chrome/i.test(ua))return'Chrome';
+  if(/FxiOS|Firefox/i.test(ua))return'Firefox';
+  if(/Safari/i.test(ua))return'Safari';
+  return'Outro';
+}
+function osOf(ua){
+  if(/iphone|ipad|ipod/i.test(ua))return'iOS';
+  if(/android/i.test(ua))return'Android';
+  if(/windows/i.test(ua))return'Windows';
+  if(/mac os|macintosh/i.test(ua))return'macOS';
+  if(/linux/i.test(ua))return'Linux';
+  return'Outro';
+}
+
 /* ── NORMALIZE ── */
 function norm(e){
   const t=e.t||(e.data?new Date(e.data).getTime():0)||0;
+  const url=e.url||'';
+  const ua=e.ua||'';
   return {
     ev:    e.ev    ||e.evento   ||'',
     s:     e.s     ||e.session  ||'',
@@ -244,12 +287,44 @@ function norm(e){
     ans:   e.ans   ||e.resposta ||'',
     ms:    +e.ms||0,
     ref:   e.ref   ||e.referrer ||'',
-    ua:    e.ua    ||'',
+    ua,
     event_id:e.event_id||'',
     fbp:   e.fbp   ||'',
     fbc:   e.fbc   ||'',
-    url:   e.url   ||''
+    url,
+    src:   qp(url,'utm_source'),
+    med:   qp(url,'utm_medium'),
+    camp:  qp(url,'utm_campaign'),
+    cont:  qp(url,'utm_content'),
+    term:  qp(url,'utm_term'),
+    adset: qp(url,'utm_adset'),
+    device:deviceOf(ua),
+    browser:browserOf(ua),
+    os:    osOf(ua)
   };
+}
+
+/* ── ATRIBUIÇÃO POR SESSÃO ── */
+function sessionAttrib(){
+  const m={};
+  _ev.filter(e=>e.s).slice().sort((a,b)=>a.t-b.t).forEach(e=>{
+    if(!m[e.s]){
+      m[e.s]={src:e.src||'',med:e.med||'',camp:e.camp||'',cont:e.cont||'',adset:e.adset||'',
+              device:e.device||'',browser:e.browser||'',os:e.os||'',ref:e.ref||''};
+    } else {
+      ['src','med','camp','cont','adset'].forEach(k=>{if(!m[e.s][k]&&e[k])m[e.s][k]=e[k];});
+      if(!m[e.s].device&&e.device)m[e.s].device=e.device;
+      if(!m[e.s].browser&&e.browser)m[e.s].browser=e.browser;
+      if(!m[e.s].os&&e.os)m[e.s].os=e.os;
+    }
+  });
+  return m;
+}
+function inc(o,k){o[k]=(o[k]||0)+1;}
+function barGroup(counts,color){
+  const ent=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const max=ent[0]?.[1]||1;
+  return ent.map(([k,n])=>`<div class="bar-row"><span class="bar-lbl" title="${esc(k)}">${esc(k)}</span><div class="bar-track"><div class="bar-fill" style="width:${(n/max*100).toFixed(0)}%${color?';background:'+color:''}"></div></div><span class="bar-n">${n}</span></div>`).join('')||'<p style="color:#ccc;font-size:13px">Sem dados</p>';
 }
 
 /* ── LOCAL STORAGE ── */
@@ -321,56 +396,63 @@ function render(){
   const checkouts=_ev.filter(e=>e.ev==='checkout_click');
   const vViews   =_ev.filter(e=>e.ev==='view'&&e.step==='vendas');
   const sc=uPerStep(views);
-  try{renderKPIs(sc,checkouts);}catch(e){console.error(e);}
-  try{renderFunnelMini(sc);}catch(e){console.error(e);}
+  const att=sessionAttrib();
+  const receita=_vendas.filter(v=>isApproved(v.status||'')).reduce((s,v)=>s+(parseFloat(v.valor)||0),0);
+  const leadU=new Set(answers.filter(e=>+e.step===1).map(e=>e.s)).size||sc['1']||0;
+  const journey=[
+    {l:'Visitantes', ico:'👁', v:sc['0']||new Set(views.map(e=>e.s)).size},
+    {l:'Leads',      ico:'🙋', v:leadU},
+    {l:'50% Quiz',   ico:'📝', v:sc['21']||0},
+    {l:'Resultado',  ico:'🏁', v:sc['40']||0},
+    {l:'Pág. Vendas',ico:'🛒', v:new Set(vViews.map(e=>e.s)).size},
+    {l:'Checkout',   ico:'💳', v:new Set(checkouts.map(e=>e.s)).size},
+    {l:'Compras',    ico:'🎯', v:_vendas.filter(v=>isApproved(v.status||'')).length},
+  ];
+  try{renderKPIs(journey,receita);}catch(e){console.error(e);}
+  try{renderFunnelMini(journey);}catch(e){console.error(e);}
   try{renderArea(views);}catch(e){console.error(e);}
   try{renderFunil(sc);}catch(e){console.error(e);}
   try{renderEventos();}catch(e){console.error('ev',e);document.getElementById('tab-eventos').innerHTML=`<p style="color:red;padding:16px">Erro: ${e.message}</p>`;}
-  try{renderResumo(sc,views,answers,checkouts,vViews);}catch(e){console.error('res',e);}
+  try{renderResumo(sc,views,answers,checkouts,vViews,att);}catch(e){console.error('res',e);}
+  try{renderTrafego(att);}catch(e){console.error('traf',e);}
   try{renderVendas();}catch(e){console.error(e);}
   try{renderCapi();}catch(e){console.error(e);}
   updateDate();
 }
 
 /* ── KPIs ── */
-function renderKPIs(sc,checkouts){
-  const allV=_ev.filter(e=>e.ev==='view'&&e.step!=='vendas');
-  const uniq=new Set(allV.map(e=>e.s)).size||1;
-  const pv  =sc['0']||uniq;
-  const lds =sc['1']||0;
-  const qual=sc['21']||0;
-  const done=sc['40']||0;
-  const chkN=new Set(checkouts.map(e=>e.s)).size;
-  const inter=pv>0?Math.min((lds/pv)*100,100).toFixed(1)+'%':'0%';
-  const receita=_vendas.filter(v=>isApproved(v.status||'')).reduce((s,v)=>s+(parseFloat(v.valor)||0),0);
+function renderKPIs(journey,receita){
+  const m={};journey.forEach(j=>m[j.l]=j.v);
+  const vis=m['Visitantes']||0,lds=m['Leads']||0,vend=m['Pág. Vendas']||0,chk=m['Checkout']||0,pur=m['Compras']||0;
+  const inter=vis>0?Math.min((lds/vis)*100,100).toFixed(1)+'%':'0%';
+  const ticket=pur>0?receita/pur:0;
   document.getElementById('kpiRow').innerHTML=[
-    {ico:'👁',v:pv,   l:'Visitantes', sub:'Landing page'},
-    {ico:'🙋',v:lds,  l:'Leads',      sub:'Iniciaram quiz'},
-    {ico:'⚡',v:inter,l:'% Interação',sub:'Leads / Visitantes'},
-    {ico:'✅',v:qual, l:'Qualificados',sub:'50% do funil'},
-    {ico:'🛒',v:chkN, l:'Checkout',   sub:'Cliques únicos'},
-    {ico:'💰',v:'R$ '+receita.toFixed(2).replace('.',','),l:'Receita',sub:'Vendas aprovadas'},
+    {ico:'👁',v:vis, l:'Visitantes', sub:'Landing page'},
+    {ico:'🙋',v:lds, l:'Leads',      sub:inter+' de interação'},
+    {ico:'🛒',v:vend,l:'Pág. Vendas',sub:'Visitaram oferta'},
+    {ico:'💳',v:chk, l:'Checkout',   sub:'Cliques únicos'},
+    {ico:'🎯',v:pur, l:'Compras',    sub:'Vendas aprovadas'},
+    {ico:'💰',v:'R$ '+receita.toFixed(2).replace('.',','),l:'Receita',sub:pur>0?'Ticket R$ '+ticket.toFixed(2).replace('.',','):'—'},
   ].map(k=>`<div class="kpi"><div class="kpi-ico">${k.ico}</div><div class="kpi-val">${k.v}</div><div class="kpi-lbl">${k.l}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
 }
 
-/* ── FUNNEL MINI ── */
-function renderFunnelMini(sc){
-  const fsteps=[{l:'Landing',s:0},{l:'Quiz',s:2},{l:'50% Funil',s:21},{l:'Resultado',s:40}];
-  const base=sc['0']||1;
-  const html=fsteps.map((st,i)=>{
-    const v=sc[String(st.s)]||0;
+/* ── FUNNEL MINI (jornada completa anúncio → compra) ── */
+function renderFunnelMini(journey){
+  const base=journey[0].v||1;
+  const html=journey.map((st,i)=>{
+    const v=st.v||0;
     const pct=Math.min((v/base)*100,100).toFixed(0);
-    const prev=i>0?sc[String(fsteps[i-1].s)]||1:null;
-    const step=prev!=null?(v/Math.max(prev,1)*100).toFixed(0)+'%':'100%';
+    const prev=i>0?(journey[i-1].v||0):null;
+    const step=prev!=null?(prev>0?(v/prev*100).toFixed(0):'0')+'%':'100%';
     return `${i>0?'<div class="fm-arrow">›</div>':''}
     <div class="fm-step">
       <div class="fm-bar-wrap"><div class="fm-bar" style="width:${pct}%"></div></div>
-      <div class="fm-lbl">${st.l}</div>
+      <div class="fm-lbl">${st.ico} ${st.l}</div>
       <div class="fm-val">${v}</div>
       <div class="fm-pct">${step}</div>
     </div>`;
   }).join('');
-  document.getElementById('funnelMini').innerHTML=`<div class="funnel-mini">${html}</div>`;
+  document.getElementById('funnelMini').innerHTML=`<div class="funnel-mini" style="min-width:680px">${html}</div>`;
 }
 
 /* ── AREA CHART ── */
@@ -516,7 +598,7 @@ function renderEventos(){
 }
 
 /* ── RESUMO ── */
-function renderResumo(sc,views,answers,checkouts,vViews){
+function renderResumo(sc,views,answers,checkouts,vViews,att){
   // Gênero
   const gMap={},gSeen=new Set();
   views.filter(e=>+e.step>=2&&e.gender).sort((a,b)=>a.t-b.t).forEach(e=>{
@@ -526,20 +608,20 @@ function renderResumo(sc,views,answers,checkouts,vViews){
   });
   const gTotal=Object.values(gMap).reduce((a,s)=>a+s.size,0)||1;
   const gRows=Object.entries(gMap).sort((a,b)=>b[1].size-a[1].size).map(([g,s])=>`
-    <div class="bar-row"><span class="bar-lbl">${g}</span>
+    <div class="bar-row"><span class="bar-lbl">${esc(g)}</span>
     <div class="bar-track"><div class="bar-fill" style="width:${(s.size/gTotal*100).toFixed(0)}%"></div></div>
     <span class="bar-n">${s.size}</span></div>`).join('');
 
-  // Origens
-  const rMap={},rSeen=new Set();
-  views.filter(e=>+e.step===0).forEach(e=>{
-    if(rSeen.has(e.s))return;rSeen.add(e.s);
-    const src=e.ref||'Direct';rMap[src]=(rMap[src]||0)+1;
+  // Origens (utm_source com fallback p/ referrer)
+  const rMap={};
+  Object.values(att||{}).forEach(a=>{
+    const src=a.src||(a.ref&&a.ref!=='Direct'?a.ref:'Direto / Orgânico');
+    rMap[src]=(rMap[src]||0)+1;
   });
   const topR=Object.entries(rMap).sort((a,b)=>b[1]-a[1]).slice(0,8);
   const maxR=topR[0]?.[1]||1;
   const rRows=topR.map(([r,n])=>`
-    <div class="bar-row"><span class="bar-lbl">${r}</span>
+    <div class="bar-row"><span class="bar-lbl" title="${esc(r)}">${esc(r)}</span>
     <div class="bar-track"><div class="bar-fill" style="width:${(n/maxR*100).toFixed(0)}%;background:linear-gradient(90deg,#f59e0b,#fbbf24)"></div></div>
     <span class="bar-n">${n}</span></div>`).join('');
 
@@ -587,6 +669,50 @@ function renderResumo(sc,views,answers,checkouts,vViews){
         </div>
         <div class="mc"><h3>Progresso no Funil</h3>${fRows}</div>
       </div>
+    </div>`;
+}
+
+/* ── TRÁFEGO / UTMs ── */
+function renderTrafego(att){
+  const arr=Object.values(att||{});
+  if(!arr.length){
+    document.getElementById('tab-trafego').innerHTML=`
+      <div style="text-align:center;padding:48px 0;color:#bbb">
+        <div style="font-size:40px;margin-bottom:12px">🎯</div>
+        <p style="font-size:14px;font-weight:600;color:#888">Sem dados de tráfego ainda</p>
+        <p style="font-size:12px;margin-top:6px">As UTMs dos anúncios aparecem aqui assim que chegar tráfego pago</p>
+      </div>`;
+    return;
+  }
+  const src={},camp={},cont={},adset={},dev={},br={},os={};
+  arr.forEach(a=>{
+    inc(src, a.src||(a.ref&&a.ref!=='Direct'?a.ref:'Direto / Orgânico'));
+    if(a.camp) inc(camp,a.camp);
+    if(a.cont) inc(cont,a.cont);
+    if(a.adset)inc(adset,a.adset);
+    inc(dev,a.device||'Desconhecido');
+    inc(br, a.browser||'—');
+    inc(os, a.os||'—');
+  });
+  const paid=arr.filter(a=>a.src||a.med).length;
+  const pct=arr.length?((paid/arr.length)*100).toFixed(0):'0';
+  document.getElementById('tab-trafego').innerHTML=`
+    <div class="stat-grid" style="margin-bottom:16px">
+      <div class="stat-card"><div class="stat-val">${arr.length}</div><div class="stat-lbl">Sessões Totais</div></div>
+      <div class="stat-card"><div class="stat-val">${paid}</div><div class="stat-lbl">C/ UTM (pago)</div></div>
+      <div class="stat-card"><div class="stat-val">${arr.length-paid}</div><div class="stat-lbl">Direto / Orgânico</div></div>
+      <div class="stat-card"><div class="stat-val">${pct}%</div><div class="stat-lbl">Tráfego Rastreado</div></div>
+    </div>
+    <div class="three-col" style="margin-bottom:16px">
+      <div class="mc"><h3>🌐 Fonte (utm_source)</h3>${barGroup(src,'linear-gradient(90deg,#3db8ac,#4A7AF5)')}</div>
+      <div class="mc"><h3>📣 Campanha (utm_campaign)</h3>${barGroup(camp,'linear-gradient(90deg,#f59e0b,#fbbf24)')}</div>
+      <div class="mc"><h3>🎬 Anúncio (utm_content)</h3>${barGroup(cont,'linear-gradient(90deg,#8b5cf6,#a78bfa)')}</div>
+    </div>
+    ${Object.keys(adset).length?`<div class="mc" style="margin-bottom:16px"><h3>🎯 Conjunto de Anúncios (utm_adset)</h3>${barGroup(adset,'linear-gradient(90deg,#10b981,#34d399)')}</div>`:''}
+    <div class="three-col">
+      <div class="mc"><h3>📱 Dispositivo</h3>${barGroup(dev,'linear-gradient(90deg,#ec4899,#f43f5e)')}</div>
+      <div class="mc"><h3>🧭 Navegador</h3>${barGroup(br,'linear-gradient(90deg,#06b6d4,#22d3ee)')}</div>
+      <div class="mc"><h3>💻 Sistema</h3>${barGroup(os,'linear-gradient(90deg,#64748b,#94a3b8)')}</div>
     </div>`;
 }
 
@@ -674,6 +800,12 @@ function renderCapi(){
     </tr>`;
   }).join('');
   const statusOk=total>0&&ok===total;
+  const stEl=document.getElementById('capiStatus');
+  if(stEl){
+    const c=statusOk?'#22c55e':total===0?'#f59e0b':'#ef4444';
+    const txt=statusOk?'CAPI ativo':total===0?'CAPI aguardando':'CAPI c/ erros';
+    stEl.innerHTML=`<span class="dot" style="background:${c}"></span>${txt}`;
+  }
   document.getElementById('tab-capi').innerHTML=`
     <div class="stat-grid" style="margin-bottom:16px">
       <div class="stat-card"><div class="stat-val">${total}</div><div class="stat-lbl">Total Enviados</div></div>
@@ -703,7 +835,7 @@ function renderCapi(){
 function switchTab(name,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
-  ['funil','eventos','resumo','vendas','capi'].forEach(t=>{
+  ['funil','eventos','resumo','trafego','vendas','capi'].forEach(t=>{
     document.getElementById('tab-'+t).style.display=t===name?'block':'none';
   });
 }
@@ -720,18 +852,22 @@ function updateDate(){
 
 /* ── EXPORT CSV ── */
 function exportCSV(){
+  const att=sessionAttrib();
   const sess={};
   _ev.forEach(e=>{
     if(!e.s)return;
-    if(!sess[e.s])sess[e.s]={sid:e.s,first:e.t,ref:e.ref||'',evs:[]};
+    if(!sess[e.s])sess[e.s]={sid:e.s,first:e.t,evs:[]};
+    if((e.t||0)<sess[e.s].first)sess[e.s].first=e.t||0;
     sess[e.s].evs.push(e);
   });
-  let csv='Sessão,Data,Origem,Gênero,Eventos\n';
+  const q=v=>`"${String(v==null?'':v).replace(/"/g,'""')}"`;
+  let csv='Sessão,Data,Fonte,Campanha,Anúncio,Conjunto,Dispositivo,Navegador,Gênero,Eventos\n';
   Object.values(sess).sort((a,b)=>b.first-a.first).forEach(s=>{
-    const d=new Date(s.first).toLocaleDateString('pt-BR');
+    const a=att[s.sid]||{};
+    const d=new Date(s.first).toLocaleString('pt-BR');
     const g=s.evs.find(e=>e.gender)?.gender||'';
-    const ev=s.evs.map(e=>e.ev+(e.ans?':'+e.ans:'')).join(' | ');
-    csv+=`"${s.sid}","${d}","${s.ref||'Direct'}","${g}","${ev}"\n`;
+    const ev=s.evs.slice().sort((x,y)=>x.t-y.t).map(e=>e.ev+(e.ans?':'+e.ans:'')).join(' | ');
+    csv+=[q(s.sid),q(d),q(a.src||a.ref||'Direto'),q(a.camp||''),q(a.cont||''),q(a.adset||''),q(a.device||''),q(a.browser||''),q(g),q(ev)].join(',')+'\n';
   });
   const a=document.createElement('a');
   a.href='data:text/csv;charset=utf-8,﻿'+encodeURIComponent(csv);
