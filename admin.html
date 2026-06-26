@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Admin — Mounjaro de Pobre</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f5f6fa;color:#1a1a2e;min-height:100vh}
+
+/* GATE */
+#gate{display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a1a2e,#16213e)}
+.gate-box{background:#fff;border-radius:20px;padding:40px 32px;text-align:center;width:320px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.gate-box h2{font-size:22px;margin-bottom:6px}
+.gate-box p{font-size:13px;color:#888;margin-bottom:24px}
+.gate-input{width:100%;padding:12px 16px;border:2px solid #e5e7eb;border-radius:10px;font-size:16px;outline:none;transition:.2s}
+.gate-input:focus{border-color:#3db8ac}
+.gate-btn{width:100%;margin-top:12px;padding:14px;background:#3db8ac;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:.2s}
+.gate-btn:hover{background:#2a9d8f}
+.gate-err{color:#e63946;font-size:12px;margin-top:10px;display:none}
+
+/* DASHBOARD */
+#dash{display:none}
+
+/* Header */
+.adm-hdr{background:#fff;border-bottom:1px solid #e5e7eb;padding:14px 24px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:10}
+.adm-logo{font-size:15px;font-weight:800}
+.adm-logo span{color:#3db8ac}
+.adm-hdr-right{margin-left:auto;display:flex;gap:10px;align-items:center}
+.date-badge{background:#f3f4f6;border-radius:8px;padding:8px 14px;font-size:12px;color:#555;display:flex;align-items:center;gap:6px}
+.refresh-btn{background:#f3f4f6;border:none;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;transition:.2s}
+.refresh-btn:hover{background:#e5e7eb}
+.clear-btn{background:#fff0f0;color:#e63946;border:none;border-radius:8px;padding:8px 14px;font-size:12px;font-weight:600;cursor:pointer}
+
+/* Main */
+.adm-main{padding:24px;max-width:1400px;margin:0 auto}
+
+/* KPIs */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:24px}
+@media(max-width:1100px){.kpi-row{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.kpi-row{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:#fff;border-radius:14px;padding:18px 20px;box-shadow:0 1px 4px rgba(0,0,0,.06);border-left:3px solid #3db8ac}
+.kpi-label{font-size:11px;color:#999;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.kpi-val{font-size:30px;font-weight:800;color:#1a1a2e;line-height:1}
+.kpi-sub{font-size:11px;color:#bbb;margin-top:6px;line-height:1.4}
+
+/* Cards */
+.card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.card-title{font-size:13px;font-weight:700;color:#1a1a2e;margin-bottom:16px;display:flex;align-items:center;gap:6px}
+
+/* Area chart */
+.area-wrap{margin-bottom:24px}
+.area-svg{width:100%;height:160px;overflow:visible}
+
+/* Two col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+@media(max-width:900px){.two-col{grid-template-columns:1fr}}
+
+/* Funnel list */
+.funnel-list{list-style:none}
+.funnel-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;margin-bottom:4px;transition:.15s;border:1.5px solid transparent}
+.funnel-item:hover{background:#f0faf9}
+.funnel-item.active{background:#f0faf9;border-color:#3db8ac}
+.fi-name{font-size:12px;font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#333}
+.fi-bar-bg{width:80px;background:#f3f4f6;border-radius:3px;height:6px;flex-shrink:0}
+.fi-bar{height:6px;border-radius:3px;background:#3db8ac;transition:.4s}
+.fi-count{font-size:12px;color:#666;width:28px;text-align:right;flex-shrink:0}
+.fi-pct{font-size:11px;color:#aaa;width:38px;text-align:right;flex-shrink:0}
+
+/* Step detail */
+.detail-placeholder{text-align:center;padding:40px 16px;color:#ccc;font-size:13px}
+.detail-placeholder div{font-size:28px;margin-bottom:10px}
+.d-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.d-sub{font-size:12px;color:#999;margin-bottom:18px}
+.d-stat-row{display:flex;gap:12px;margin-bottom:18px}
+.d-stat{background:#f8fffe;border:1px solid #d0f0ed;border-radius:10px;padding:12px 16px;flex:1;text-align:center}
+.d-stat-val{font-size:22px;font-weight:800;color:#3db8ac}
+.d-stat-label{font-size:11px;color:#999;margin-top:2px}
+.ans-section-title{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+.ans-item{margin-bottom:10px}
+.ans-meta{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.ans-meta span:first-child{color:#444;max-width:72%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ans-meta span:last-child{color:#999;flex-shrink:0}
+.ans-bg{background:#f3f4f6;border-radius:4px;height:7px}
+.ans-fill{height:7px;border-radius:4px;background:linear-gradient(90deg,#3db8ac,#2a9d8f);transition:.5s}
+
+/* Three col */
+.three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+@media(max-width:900px){.three-col{grid-template-columns:1fr}}
+
+/* Bar list */
+.bar-item{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #f5f5f5}
+.bar-item:last-child{border:none}
+.bar-name{font-size:12px;color:#555;flex-shrink:0;width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar-bg{flex:1;background:#f3f4f6;border-radius:3px;height:6px}
+.bar-fill{height:6px;border-radius:3px;background:#3db8ac}
+.bar-count{font-size:12px;color:#999;flex-shrink:0;width:24px;text-align:right}
+
+.empty-state{text-align:center;padding:32px 16px;color:#ccc;font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <div style="font-size:36px;margin-bottom:14px">🔒</div>
+    <h2>Painel Admin</h2>
+    <p>Mounjaro de Pobre — Analytics</p>
+    <input class="gate-input" type="password" id="pwd" placeholder="Senha" onkeydown="if(event.key==='Enter')auth()">
+    <button class="gate-btn" onclick="auth()">Entrar</button>
+    <div class="gate-err" id="err">Senha incorreta. Tente novamente.</div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash">
+  <div class="adm-hdr">
+    <div class="adm-logo">Mounjaro <span>de Pobre</span> &mdash; Admin</div>
+    <div class="adm-hdr-right">
+      <div class="date-badge">📅 <span id="dateRange">—</span></div>
+      <button class="refresh-btn" onclick="buildDash()" title="Atualizar">↻</button>
+      <button class="clear-btn" onclick="clearData()">Limpar dados</button>
+    </div>
+  </div>
+
+  <div class="adm-main">
+    <!-- KPIs -->
+    <div class="kpi-row" id="kpiRow"></div>
+
+    <!-- Area chart -->
+    <div class="area-wrap card">
+      <div class="card-title">📈 Acessos ao longo do tempo (últimos 14 dias)</div>
+      <svg class="area-svg" id="areaSvg" viewBox="0 0 800 150" preserveAspectRatio="none"></svg>
+    </div>
+
+    <!-- Funnel + Detail -->
+    <div class="two-col">
+      <div class="card">
+        <div class="card-title">🔽 Funil de Conversão — clique em uma etapa</div>
+        <ul class="funnel-list" id="funnelList"></ul>
+      </div>
+      <div class="card" id="stepDetail">
+        <div class="detail-placeholder"><div>👆</div>Clique em uma etapa para ver detalhes</div>
+      </div>
+    </div>
+
+    <!-- Breakdowns -->
+    <div class="three-col">
+      <div class="card">
+        <div class="card-title">🌐 Fonte de Tráfego</div>
+        <div id="sourcePanel"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">⚧ Gênero</div>
+        <div id="genderPanel"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📱 Dispositivo</div>
+        <div id="devicePanel"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const PWD = 'L3c1U64&5';
+const KEY = 'mdjp_ev';
+
+function auth(){
+  if(document.getElementById('pwd').value === PWD){
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('dash').style.display = 'block';
+    buildDash();
+  } else {
+    document.getElementById('err').style.display = 'block';
+  }
+}
+
+function clearData(){
+  if(confirm('Apagar todos os dados de analytics?')){
+    localStorage.removeItem(KEY);
+    buildDash();
+  }
+}
+
+/* ---------- DATA ---------- */
+function getEvents(){
+  try{ return JSON.parse(localStorage.getItem(KEY)||'[]'); }
+  catch(e){ return []; }
+}
+
+/* ---------- MAIN BUILD ---------- */
+let _views=[], _answers=[];
+
+function buildDash(){
+  const events = getEvents();
+  _views = events.filter(e=>e.ev==='view');
+  _answers = events.filter(e=>e.ev==='answer');
+
+  // Date range display
+  const now = new Date();
+  const d14 = new Date(now - 14*86400000);
+  const fmt = d => d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  document.getElementById('dateRange').textContent = fmt(d14)+' – '+fmt(now);
+
+  buildKPIs();
+  buildAreaChart();
+  buildFunnel();
+  buildBreakdowns();
+}
+
+/* ---------- KPIs ---------- */
+function buildKPIs(){
+  const sessions = new Set(_views.map(e=>e.s)).size;
+  const stepCounts = {};
+  _views.forEach(e=>{ stepCounts[e.step]=(stepCounts[e.step]||0)+1; });
+
+  const pageviews = stepCounts[0]||0;
+  const leads = stepCounts[1]||0;
+  const qualified = stepCounts[10]||0; // halfway ~step 10
+  const completed = stepCounts[19]||stepCounts[18]||0;
+  const interacao = pageviews>0 ? ((leads/pageviews)*100).toFixed(1)+'%' : '0%';
+
+  document.getElementById('kpiRow').innerHTML = [
+    {label:'Pageviews',val:pageviews,sub:'Visitantes que acessaram o funil'},
+    {label:'Leads Adquiridos',val:leads,sub:'Iniciaram alguma interação'},
+    {label:'% Interação',val:interacao,sub:'Percentual de leads que interagiram'},
+    {label:'Leads Qualificados',val:qualified,sub:'Completaram 50% do funil'},
+    {label:'Fluxos Completos',val:completed,sub:'Chegaram até a última etapa'},
+  ].map(k=>`<div class="kpi"><div class="kpi-label">${k.label}</div><div class="kpi-val">${k.val}</div><div class="kpi-sub">${k.sub}</div></div>`).join('');
+}
+
+/* ---------- AREA CHART ---------- */
+function buildAreaChart(){
+  const svg = document.getElementById('areaSvg');
+  const landing = _views.filter(e=>e.step===0);
+
+  if(!landing.length){
+    svg.innerHTML='<text x="400" y="75" text-anchor="middle" fill="#ccc" font-size="16" font-family="sans-serif">Sem dados ainda — faça algumas visitas ao quiz para ver o gráfico</text>';
+    return;
+  }
+
+  const DAYS=14, now=Date.now(), dayMs=86400000;
+  const buckets=[];
+  for(let i=0;i<DAYS;i++){
+    const ts=now-(DAYS-1-i)*dayMs;
+    buckets.push({label:new Date(ts).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}),count:0});
+  }
+  landing.forEach(e=>{
+    const idx=DAYS-1-Math.floor((now-e.t)/dayMs);
+    if(idx>=0&&idx<DAYS)buckets[idx].count++;
+  });
+
+  const W=800,H=150,pt=15,pb=28,pl=10,pr=10;
+  const iw=W-pl-pr, ih=H-pt-pb;
+  const mx=Math.max(...buckets.map(b=>b.count),1);
+
+  const pts=buckets.map((b,i)=>[pl+(i/(DAYS-1))*iw, pt+ih-(b.count/mx)*ih]);
+  const linePath=pts.map((p,i)=>(i===0?`M${p[0].toFixed(1)},${p[1].toFixed(1)}`:`L${p[0].toFixed(1)},${p[1].toFixed(1)}`)).join('');
+  const areaPath=linePath+` L${pts[pts.length-1][0]},${H-pb} L${pts[0][0]},${H-pb} Z`;
+
+  const step=Math.ceil(DAYS/7);
+  const labels=buckets.map((b,i)=>{
+    if(i%step!==0&&i!==DAYS-1)return '';
+    const x=pl+(i/(DAYS-1))*iw;
+    return `<text x="${x.toFixed(1)}" y="${H-5}" text-anchor="middle" fill="#bbb" font-size="9" font-family="sans-serif">${b.label}</text>`;
+  }).join('');
+
+  const dots=pts.map(p=>`<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3" fill="#3db8ac"/>`).join('');
+
+  svg.innerHTML=`
+    <defs>
+      <linearGradient id="ag" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#3db8ac" stop-opacity=".25"/>
+        <stop offset="100%" stop-color="#3db8ac" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaPath}" fill="url(#ag)"/>
+    <path d="${linePath}" fill="none" stroke="#3db8ac" stroke-width="2.5"/>
+    ${dots}
+    ${labels}
+  `;
+}
+
+/* ---------- FUNNEL ---------- */
+const STEPS = [
+  {step:0, label:'Landing Page'},
+  {step:1, label:'Escolha de Gênero'},
+  {step:2, label:'Faixa Etária'},
+  {step:3, label:'Social Proof'},
+  {step:4, label:'Objetivo Principal'},
+  {step:5, label:'Físico Atual'},
+  {step:6, label:'Interstitial'},
+  {step:7, label:'Objetivo Corporal'},
+  {step:8, label:'Áreas do Corpo'},
+  {step:9, label:'Melhor Forma'},
+  {step:10, label:'Metabolismo'},
+  {step:11, label:'Tipo Físico'},
+  {step:12, label:'Conhecimento Jejum'},
+  {step:13, label:'Problemas de Saúde'},
+  {step:14, label:'Experiência Dieta'},
+  {step:15, label:'Motivação'},
+  {step:16, label:'Rotina de Trabalho'},
+  {step:17, label:'Horas de Sono'},
+  {step:18, label:'Carregando...'},
+  {step:19, label:'Resultado / Projeção'},
+];
+
+function buildFunnel(){
+  const stepCounts={};
+  _views.forEach(e=>{ stepCounts[e.step]=(stepCounts[e.step]||0)+1; });
+
+  const maxCount = stepCounts[0]||1;
+  const visibleSteps = STEPS.filter(s=>stepCounts[s.step]>0);
+
+  if(!visibleSteps.length){
+    document.getElementById('funnelList').innerHTML='<div class="empty-state">Sem dados de funil ainda.<br>Visite o quiz para começar a registrar dados.</div>';
+    return;
+  }
+
+  document.getElementById('funnelList').innerHTML = visibleSteps.map(s=>{
+    const count=stepCounts[s.step]||0;
+    const pct=((count/maxCount)*100).toFixed(1);
+    return `<li class="funnel-item" onclick="showDetail(${s.step},'${s.label.replace(/'/g,"\\'")}',this)">
+      <span class="fi-name">${s.label}</span>
+      <div class="fi-bar-bg"><div class="fi-bar" style="width:${Math.min(100,parseFloat(pct))}%"></div></div>
+      <span class="fi-count">${count}</span>
+      <span class="fi-pct">${pct}%</span>
+    </li>`;
+  }).join('');
+}
+
+/* ---------- STEP DETAIL ---------- */
+function showDetail(step, label, el){
+  document.querySelectorAll('.funnel-item').forEach(li=>li.classList.remove('active'));
+  el.classList.add('active');
+
+  const views = _views.filter(e=>e.step===step);
+  const answers = _answers.filter(e=>e.step===step);
+
+  const times = answers.map(e=>e.ms).filter(Boolean);
+  const avgSec = times.length ? Math.round(times.reduce((a,b)=>a+b,0)/times.length/1000) : null;
+
+  // Answer distribution
+  const dist={};
+  answers.forEach(e=>{
+    if(!e.ans)return;
+    String(e.ans).split(', ').forEach(a=>{
+      const k=a.trim();
+      if(k)dist[k]=(dist[k]||0)+1;
+    });
+  });
+  const entries=Object.entries(dist).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const maxAns=entries[0]?entries[0][1]:1;
+
+  // Drop-off
+  const stepCounts={};
+  _views.forEach(e=>{ stepCounts[e.step]=(stepCounts[e.step]||0)+1; });
+  const thisCount=stepCounts[step]||0;
+  const nextStep=STEPS.find(s=>s.step>step);
+  const nextCount=nextStep?stepCounts[nextStep.step]||0:0;
+  const dropPct=thisCount>0&&nextStep?((1-nextCount/thisCount)*100).toFixed(1)+'%':'—';
+
+  document.getElementById('stepDetail').innerHTML=`
+    <div class="d-title">${label}</div>
+    <div class="d-sub">Etapa ${step} do funil</div>
+    <div class="d-stat-row">
+      <div class="d-stat"><div class="d-stat-val">${views.length}</div><div class="d-stat-label">Visualizações</div></div>
+      <div class="d-stat"><div class="d-stat-val">${answers.length}</div><div class="d-stat-label">Respostas</div></div>
+      <div class="d-stat"><div class="d-stat-val">${avgSec!=null?avgSec+'s':'—'}</div><div class="d-stat-label">Tempo médio</div></div>
+      <div class="d-stat"><div class="d-stat-val">${dropPct}</div><div class="d-stat-label">Abandono</div></div>
+    </div>
+    ${entries.length?`
+      <div class="ans-section-title">Respostas mais comuns</div>
+      ${entries.map(([ans,cnt])=>`
+        <div class="ans-item">
+          <div class="ans-meta"><span>${ans}</span><span>${cnt} (${((cnt/answers.length)*100).toFixed(0)}%)</span></div>
+          <div class="ans-bg"><div class="ans-fill" style="width:${(cnt/maxAns)*100}%"></div></div>
+        </div>
+      `).join('')}
+    `:`<div class="empty-state" style="padding:16px 0">Sem respostas registradas nesta etapa</div>`}
+  `;
+}
+
+/* ---------- BREAKDOWNS ---------- */
+function buildBreakdowns(){
+  // Source
+  const sources={};
+  _views.filter(e=>e.step===0).forEach(e=>{
+    const ref=e.ref||(document.referrer?document.referrer.split('/')[2]:'');
+    const key=ref?simplifyRef(ref):'Direto / Desconhecido';
+    sources[key]=(sources[key]||0)+1;
+  });
+  renderBarList('sourcePanel', sources, 'Sem dados de tráfego');
+
+  // Gender
+  const genders={};
+  _views.filter(e=>e.gender).forEach(e=>{
+    const g=e.gender==='homem'?'Homem ♂':'Mulher ♀';
+    genders[g]=(genders[g]||0)+1;
+  });
+  renderBarList('genderPanel', genders, 'Nenhum gênero registrado');
+
+  // Device from user agent (current visitor only as fallback)
+  const devices={};
+  _views.forEach(e=>{
+    const ua=e.ua||'';
+    let d='Desktop';
+    if(/tablet|ipad/i.test(ua))d='Tablet';
+    else if(/mobile|android|iphone/i.test(ua))d='Mobile';
+    devices[d]=(devices[d]||0)+1;
+  });
+  // fallback: detect current device
+  if(!Object.keys(devices).length){
+    const ua=navigator.userAgent;
+    let d='Desktop';
+    if(/tablet|ipad/i.test(ua))d='Tablet';
+    else if(/mobile|android|iphone/i.test(ua))d='Mobile';
+    devices[d]=1;
+  }
+  renderBarList('devicePanel', devices, 'Sem dados');
+}
+
+function simplifyRef(ref){
+  if(!ref)return 'Direto';
+  if(/facebook|fb\.com|m\.facebook/i.test(ref))return 'Facebook';
+  if(/instagram/i.test(ref))return 'Instagram';
+  if(/google/i.test(ref))return 'Google';
+  if(/tiktok/i.test(ref))return 'TikTok';
+  if(/youtube/i.test(ref))return 'YouTube';
+  if(/whatsapp/i.test(ref))return 'WhatsApp';
+  return ref.replace(/^www\./,'').split('/')[0];
+}
+
+function renderBarList(id, obj, emptyMsg){
+  const el=document.getElementById(id);
+  const entries=Object.entries(obj).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){el.innerHTML=`<div class="empty-state">${emptyMsg||'Sem dados'}</div>`;return;}
+  const max=entries[0][1];
+  el.innerHTML=entries.map(([name,cnt])=>`
+    <div class="bar-item">
+      <span class="bar-name" title="${name}">${name}</span>
+      <div class="bar-bg"><div class="bar-fill" style="width:${(cnt/max)*100}%"></div></div>
+      <span class="bar-count">${cnt}</span>
+    </div>
+  `).join('');
+}
+</script>
+</body>
+</html>
