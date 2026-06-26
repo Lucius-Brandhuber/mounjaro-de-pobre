@@ -830,7 +830,7 @@ function renderFinalResult(){
     <p class="final-goal">Você chegará ${state.targetWeight}kg em 21 dias</p>
     ${buildProjectionSVG()}
     <br>
-    <button class="btn-cta" onclick="window.location.href='vendas.html'">VER MEU PLANO AGORA →</button>
+    <button class="btn-cta" onclick="window.location.assign(window.location.href.replace(/[^/]*$/,'')+'vendas.html')">VER MEU PLANO AGORA →</button>
   </div>`;
 }
 
