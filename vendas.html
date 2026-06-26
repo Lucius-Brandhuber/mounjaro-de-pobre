@@ -471,8 +471,8 @@ function toggleFaq(el){
   var KEY='mdjp_ev';
   var GAS='https://script.google.com/macros/s/AKfycby-7fqfYdyX3_ox1ooSlplYeo-UfHzzXh37g7PJNW0AlrxRjJ3eid5HBxr9i25LeBX8/exec';
   function getSid(){
-    var s=sessionStorage.getItem('mdjp_sid');
-    if(!s){s='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);sessionStorage.setItem('mdjp_sid',s);}
+    var s=localStorage.getItem('mdjp_sid');
+    if(!s){s='v'+Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('mdjp_sid',s);}
     return s;
   }
   // track page view on vendas

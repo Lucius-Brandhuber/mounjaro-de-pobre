@@ -930,8 +930,8 @@ function setWUnit(u){
   var _sid=null,_lastStep=-1,_t0=Date.now();
   function sid(){
     if(!_sid){
-      _sid=sessionStorage.getItem('mdjp_sid');
-      if(!_sid){_sid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);sessionStorage.setItem('mdjp_sid',_sid);}
+      _sid=localStorage.getItem('mdjp_sid');
+      if(!_sid){_sid=Date.now().toString(36)+Math.random().toString(36).slice(2,8);localStorage.setItem('mdjp_sid',_sid);}
     }
     return _sid;
   }
