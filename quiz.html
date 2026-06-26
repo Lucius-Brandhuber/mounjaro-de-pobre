@@ -15,7 +15,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:
 .prog-wrap{padding:10px 20px 0}
 .prog-bar{height:6px;background:#e0e0e0;border-radius:3px;overflow:hidden}
 .prog-fill{height:100%;background:linear-gradient(90deg,#3db8ac,#2fa898);border-radius:3px;transition:width .4s ease}
-.screen{padding:22px 20px 48px;animation:fi .25s ease}
+.screen{padding:clamp(28px,7vh,80px) 20px 60px;animation:fi .25s ease;display:flex;flex-direction:column;justify-content:center;min-height:calc(100vh - 80px)}
 @keyframes fi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 .stitle{font-size:21px;font-weight:800;color:#111;text-align:center;margin-bottom:24px;line-height:1.35}
 .stitle.left{text-align:left}
@@ -42,7 +42,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;display:
 .opt{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;border:1.5px solid #ddd;border-radius:14px;cursor:pointer;transition:all .18s;background:#fff}
 .opt:hover,.opt.sel{border-color:#3db8ac;background:#edfaf8}
 .opt .otxt{font-size:16px;color:#111;font-weight:500;flex:1;line-height:1.3}
-.opt .oimg{width:54px;height:54px;object-fit:cover;border-radius:10px;flex-shrink:0}
+.opt .oimg{width:58px;height:76px;object-fit:cover;object-position:top center;border-radius:10px;flex-shrink:0}
 .opt .oemo{font-size:24px;flex-shrink:0}
 .opt .ochk{width:22px;height:22px;border:2px solid #ccc;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px;transition:all .18s}
 .opt.sel .ochk{background:#3db8ac;border-color:#3db8ac;color:#fff}
@@ -134,7 +134,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 <script>
 const IMGS='imagens%20quiz/';
 const DEPS='imagens%20depoimentos/';
-const LOGO='logos/logo-mounjaro-de-pobre.png';
+const LOGO='logos/nova%20logo.png';
 
 const state={
   step:0,       // 0=landing,1=gender,2+=quiz
@@ -177,8 +177,8 @@ function buildScreens(g){
       {text:'Magro',img:IMGS+'h7.webp'},{text:'Flácido',img:IMGS+'h8.webp'},
       {text:'Uns quilinhos a mais',img:IMGS+'h9.webp'},{text:'Obeso',img:IMGS+'h10.webp'}
     ]:[
-      {text:'Magra',img:IMGS+'m7.png'},{text:'Falsa magra',img:IMGS+'m8.png'},
-      {text:'Sobrepeso',img:IMGS+'m9.png'},{text:'Obesa',img:IMGS+'m10.png'}
+      {text:'Magra',img:IMGS+'m12.png'},{text:'Falsa magra',img:IMGS+'m16.png'},
+      {text:'Sobrepeso',img:IMGS+'m14.png'},{text:'Obesa',img:IMGS+'m10.png'}
     ]},
     // 4: interstitial – manter forma
     {type:'interstitial',title:h?'Sabemos como mantê-lo em forma e saudável a longo prazo':'Sabemos como mantê-la em forma e saudável a longo prazo',chartImg:IMGS+'imgetapa7.webp'},
@@ -298,7 +298,7 @@ function buildScreens(g){
       {text:'Nenhuma das acima',emoji:'❌'}
     ]},
     // 27: rosto
-    {type:'rosto',title:'Não é só o seu corpo! Veja como o Jejum pode mudar o seu rosto!',img:h?IMGS+'h28.png':IMGS+'m27.png'},
+    {type:'rosto',title:'Não é só o seu corpo! Veja como o Jejum pode mudar o seu rosto!',img:h?IMGS+'h28.png':IMGS+'m32.png'},
     // 28: acontecimentos
     {type:'multi-emoji',title:'Algum desses acontecimentos fez você ganhar peso nos últimos anos?',options:[
       {text:'Casamento ou relacionamento',emoji:'👰'},{text:'Rotina corrida com trabalho ou família',emoji:'🤕'},
@@ -321,7 +321,7 @@ function buildScreens(g){
     // 33: idade exata
     {type:'age-input'},
     // 34: IMC resumo
-    {type:'bmi-result',img:h?IMGS+'h29.webp':IMGS+'m28.png'},
+    {type:'bmi-result',img:h?IMGS+'h29.webp':IMGS+'m33.png'},
     // 35: evento
     {type:'single-emoji',title:'Você tem algum evento importante chegando?',sub:'Ter algo para esperar pode ser uma grande motivação para alcançar o seu objetivo!',options:[
       {text:'Férias',emoji:'✈️'},{text:'Casamento',emoji:'👰'},{text:'Feriado',emoji:'🏖️'},
