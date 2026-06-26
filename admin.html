@@ -571,10 +571,20 @@ function exportCSV(){
 
 /* ─── RESET ─── */
 function resetLeads(){
-  if(confirm('Apagar todos os dados de analytics armazenados localmente?')){
-    localStorage.removeItem(KEY); localStorage.removeItem(CKEY);
-    _ev=[]; render();
-  }
+  if(!confirm('⚠️ Isso vai apagar TODOS os dados do Google Sheets e do cache local. Essa ação não pode ser desfeita. Continuar?')) return;
+  toast('Apagando dados remotos…');
+  fetch(GAS+'?action=reset', {method:'POST', body:JSON.stringify({action:'reset'}), mode:'no-cors'})
+    .catch(()=>{});
+  // aguarda 1s e limpa local também
+  setTimeout(()=>{
+    localStorage.removeItem(KEY);
+    localStorage.removeItem(CKEY);
+    // limpa flags de "já visto" para este dispositivo
+    Object.keys(localStorage).filter(k=>k.startsWith('mdjp_seen_')).forEach(k=>localStorage.removeItem(k));
+    _ev=[];
+    render();
+    toast('Dados apagados com sucesso ✓');
+  }, 1000);
 }
 
 /* ─── RESIZE ─── */
