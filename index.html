@@ -139,6 +139,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 @keyframes ping{0%{box-shadow:0 0 0 0 rgba(61,184,172,.55)}70%{box-shadow:0 0 0 12px rgba(61,184,172,0)}100%{box-shadow:0 0 0 0 rgba(61,184,172,0)}}
 .btn-cont{width:100%;background:linear-gradient(90deg,#3db8ac,#2fa898);color:#fff;border:none;border-radius:13px;padding:16px;font-size:16px;font-weight:700;cursor:pointer;margin-top:22px;letter-spacing:.3px;animation:ping 1.6s ease-out infinite}
 .btn-cont:disabled{background:#ccc;cursor:not-allowed;animation:none;box-shadow:none}
+.wpp-track{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;padding:6px 0 10px}
+.wpp-track::-webkit-scrollbar{height:0}
+.wpp-card{flex:0 0 80%;max-width:300px;height:60vh;max-height:540px;scroll-snap-align:center;border-radius:16px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.14);border:1px solid #e6e6e6;background:#fff}
+.wpp-card img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.wpp-hint{text-align:center;font-size:12px;color:#bbb;margin-top:4px}
 .btn-cta{width:100%;background:linear-gradient(90deg,#3db8ac,#2fa898);color:#fff;border:none;border-radius:13px;padding:18px;font-size:17px;font-weight:800;cursor:pointer;letter-spacing:.3px;text-transform:uppercase;animation:ping 1.6s ease-out infinite}
 </style>
 <script defer src="/_vercel/insights/script.js"></script>
@@ -360,6 +365,8 @@ function buildScreens(g){
       {text:'Evento esportivo',emoji:'🏆'},{text:'Encontro de amigos',emoji:'🎂'},
       {text:'Aniversário',emoji:'🥳'},{text:'Outro',emoji:'🧝'},{text:'Não tenho nenhum evento',emoji:'❌'}
     ]},
+    // 35b: depoimentos WhatsApp (prova social real)
+    {type:'wpp'},
     // 36: projeção
     {type:'projection'},
     // 37: loading
@@ -403,6 +410,7 @@ function render(){
     case 'multi-problem':   html+=renderMultiProblem(sc,si);break;
     case 'multi-emoji':     html+=renderMultiEmoji(sc,si);break;
     case 'rosto':           html+=renderRosto(sc,si);break;
+    case 'wpp':             html+=renderWpp(si);break;
     case 'slider-height':   html+=renderSliderHeight(si);break;
     case 'slider-weight':   html+=renderSliderWeight(si);break;
     case 'slider-target':   html+=renderSliderTarget(si);break;
@@ -609,6 +617,23 @@ function renderRosto(sc,si){
     <h2 class="stitle">${sc.title}</h2>
     <img class="rosto-img" src="${sc.img}" alt="Transformação do rosto" onerror="this.style.display='none'">
     <p class="rosto-txt">Perder peso através do jejum ajuda a reduzir gordura e inchaço no rosto, principalmente ao redor dos olhos, queixo e mandíbula, deixando sua pele com aparência mais jovem e saudável.</p>
+    <button class="btn-cont" onclick="nextStep()">Continuar</button>
+  </div>`;
+}
+
+/* -------- DEPOIMENTOS WHATSAPP -------- */
+function renderWpp(si){
+  const D='depoimentoswhatsapp/';
+  const order = state.gender==='homem'
+    ? [D+'dp3w.png',D+'dp1w.png',D+'dp2w.png',D+'dp4w.png']
+    : [D+'dp1w.png',D+'dp4w.png',D+'dp2w.png',D+'dp3w.png'];
+  const cards = order.map(src=>`
+    <div class="wpp-card"><img loading="lazy" src="${src}" alt="Depoimento no WhatsApp" onerror="this.parentNode.style.display='none'"></div>`).join('');
+  return `<div class="screen">
+    <h2 class="stitle">Mensagens reais de quem já está fazendo 💬</h2>
+    <p class="inti-sub" style="margin-top:-14px">Veja o que estão mandando pra gente no WhatsApp</p>
+    <div class="wpp-track">${cards}</div>
+    <div class="wpp-hint">← arraste para ver mais →</div>
     <button class="btn-cont" onclick="nextStep()">Continuar</button>
   </div>`;
 }
