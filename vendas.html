@@ -484,8 +484,7 @@ function toggleFaq(el){
   }
   function send(obj){
     try{var arr=JSON.parse(localStorage.getItem(KEY)||'[]');arr.push(obj);localStorage.setItem(KEY,JSON.stringify(arr));}catch(e){}
-    if(navigator.sendBeacon){navigator.sendBeacon(GAS,JSON.stringify(obj));}
-    else{fetch(GAS,{method:'POST',body:JSON.stringify(obj),mode:'no-cors'}).catch(function(){});}
+    fetch(GAS,{method:'POST',body:JSON.stringify(obj),mode:'no-cors'}).catch(function(){});
   }
   // ViewContent — visita à página de vendas
   (function(){
