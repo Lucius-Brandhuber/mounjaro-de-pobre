@@ -881,7 +881,8 @@ function renderCapi(){
       <td style="font-size:11px;color:#aaa">${(l.s||'').slice(0,10)||'—'}</td>
     </tr>`;
   }).join('');
-  const statusOk=total>0&&ok===total;
+  // Saúde recente: verde se a taxa de sucesso for ≥95% (tolera erros raros/antigos já resolvidos)
+  const statusOk=total>0&&(ok/total)>=0.95;
   const stEl=document.getElementById('capiStatus');
   if(stEl){
     const c=statusOk?'#22c55e':total===0?'#f59e0b':'#ef4444';
