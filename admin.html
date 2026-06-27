@@ -775,6 +775,30 @@ function renderResumo(sc,views,answers,checkouts,vViews,att){
   const lds=sc['1']||0;
   const cvRate=lds>0?((chkN/lds)*100).toFixed(1)+'%':'0%';
 
+  // Botões da página de vendas — qual botão a pessoa clicou (rótulo vem no campo name)
+  const btnMap={};
+  checkouts.forEach(e=>{
+    const b=(e.name&&e.name!=='Página de Vendas')?e.name:'(sem rótulo)';
+    if(!btnMap[b])btnMap[b]=new Set();
+    btnMap[b].add(e.s);
+  });
+  const btnEntries=Object.entries(btnMap).map(([b,s])=>[b,s.size]).sort((a,b)=>a[0].localeCompare(b[0],'pt'));
+  const btnMax=Math.max(1,...btnEntries.map(e=>e[1]));
+  const btnTotal=btnEntries.reduce((a,e)=>a+e[1],0);
+  const btnRows=btnEntries.map(([b,n])=>{
+    const lbl=b.replace(/^\d+-/,'');
+    return`<div class="bar-row"><span class="bar-lbl" title="${esc(b)}">${esc(lbl)}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(n/btnMax*100).toFixed(0)}%;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div></div>
+      <span class="bar-n">${n}</span></div>`;
+  }).join('');
+  const btnHTML=`<div class="mc" style="margin-top:14px">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;flex-wrap:wrap;gap:6px">
+      <h3 style="margin:0">🛒 Botões da Página de Vendas</h3>
+      <span style="font-size:11px;color:#aaa">qual botão levou ao checkout · ${btnTotal} cliques</span>
+    </div>
+    ${btnRows||'<p style="color:#ccc;font-size:13px">Nenhum clique em botão ainda</p>'}
+  </div>`;
+
   // Progresso
   const base=sc['0']||1;
   const fSteps=[{l:'Landing',s:0},{l:'Gênero',s:1},{l:'50% Funil',s:QUIZ_MID_STEP},{l:'Completou',s:QUIZ_FINAL_STEP}];
@@ -804,7 +828,8 @@ function renderResumo(sc,views,answers,checkouts,vViews,att){
         </div>
         <div class="mc"><h3>Progresso no Funil</h3>${fRows}</div>
       </div>
-    </div>`;
+    </div>
+    ${btnHTML}`;
 }
 
 /* ── TRÁFEGO / UTMs ── */

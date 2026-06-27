@@ -182,7 +182,7 @@ footer{padding:20px;text-align:center;font-size:12px;color:#aaa;border-top:1px s
   <div class="hero-arrow">
     <span>⬇</span> Você pode ser a próxima <span>⬇</span>
   </div>
-  <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta">
+  <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta" data-btn="1-Hero">
     QUERO MEU PLANO AGORA
     <small>Acesso imediato • 100% digital</small>
   </a>
@@ -227,7 +227,7 @@ footer{padding:20px;text-align:center;font-size:12px;color:#aaa;border-top:1px s
     <p class="price-installment">ou 2x de R$ 17,45 sem juros</p>
     <p class="price-note">✅ Pagamento 100% seguro • Acesso imediato</p>
     <br>
-    <a href="https://checkout.payt.com.br/c/4MA9W6" class="btn-cta" target="_blank" style="font-size:16px;padding:16px 20px">
+    <a href="https://checkout.payt.com.br/c/4MA9W6" class="btn-cta" target="_blank" data-btn="2-Preço" style="font-size:16px;padding:16px 20px">
       QUERO GARANTIR MEU PLANO
       <small>Clique e acesse agora mesmo</small>
     </a>
@@ -255,7 +255,7 @@ footer{padding:20px;text-align:center;font-size:12px;color:#aaa;border-top:1px s
       <div class="how-txt"><strong>Veja os resultados em 2 semanas</strong><span>A maioria das nossas alunas começa a notar diferença no espelho e na balança já nas primeiras 2 semanas.</span></div>
     </div>
     <br>
-    <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta" style="font-size:15px;padding:16px 20px">
+    <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta" data-btn="3-Como Funciona" style="font-size:15px;padding:16px 20px">
       QUERO COMEÇAR AGORA
     </a>
     <div class="secure-badge" style="margin-top:12px">
@@ -312,7 +312,7 @@ footer{padding:20px;text-align:center;font-size:12px;color:#aaa;border-top:1px s
       </div>
     </div>
     <br>
-    <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta" style="font-size:15px;padding:16px 20px">
+    <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta" data-btn="4-Resultados" style="font-size:15px;padding:16px 20px">
       QUERO MEU RESULTADO TAMBÉM
     </a>
   </div>
@@ -337,7 +337,7 @@ footer{padding:20px;text-align:center;font-size:12px;color:#aaa;border-top:1px s
       <p style="font-size:22px;font-weight:900;color:#3db8ac;margin-top:10px">R$ 34,90<br><small style="font-weight:400;font-size:11px">Acesso imediato</small></p>
     </div>
   </div>
-  <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta">
+  <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta" data-btn="5-Escolha do Plano">
     QUERO O PLANO AGORA — R$ 34,90
     <small>Pagamento seguro • Acesso em minutos</small>
   </a>
@@ -432,7 +432,7 @@ footer{padding:20px;text-align:center;font-size:12px;color:#aaa;border-top:1px s
 <section class="footer-cta">
   <h2>A sua janela está calculada. Falta só você decidir. ⏱️</h2>
   <p>Mais de 45 mil pessoas já transformaram seus corpos com o Seca Jejum Turbo. A próxima pode ser você.</p>
-  <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta-inv">
+  <a href="https://checkout.payt.com.br/c/4MA9W6" target="_blank" class="btn-cta-inv" data-btn="6-Rodapé">
     QUERO MEU PLANO AGORA — R$ 34,90
   </a>
   <div style="margin-top:14px">
@@ -495,17 +495,24 @@ function toggleFaq(el){
           ref:document.referrer?document.referrer.split('/')[2]:'',
           fbp:getFbp(),fbc:getFbc(),url:location.href,ua:navigator.userAgent.slice(0,200),event_id:eid});
   })();
-  // InitiateCheckout — clique no botão
+  // InitiateCheckout — clique no botão (marca QUAL botão foi clicado)
   document.querySelectorAll('a[href="https://checkout.payt.com.br/c/4MA9W6"]').forEach(function(a){
     a.addEventListener('click',function(){
       try{
         var sid=getSid();
-        var seenKey='mdjp_seen_'+sid+'_checkout';
-        if(localStorage.getItem(seenKey)==='1') return;
-        localStorage.setItem(seenKey,'1');
+        var btn=this.getAttribute('data-btn')||'desconhecido';
+        // dedup por sessão+botão → cada botão conta 1x por sessão (sem inflar)
+        var btnKey='mdjp_seen_'+sid+'_chk_'+btn;
+        if(localStorage.getItem(btnKey)==='1') return;
+        localStorage.setItem(btnKey,'1');
         var eid='chk_'+sid+'_'+Date.now();
-        if(typeof fbq!=='undefined') fbq('track','InitiateCheckout',{value:79.90,currency:'BRL'},{eventID:eid});
-        send({ev:'checkout_click',t:Date.now(),s:sid,
+        // pixel InitiateCheckout dispara só 1x por sessão (não importa o botão)
+        var pxKey='mdjp_seen_'+sid+'_checkout';
+        if(localStorage.getItem(pxKey)!=='1'){
+          localStorage.setItem(pxKey,'1');
+          if(typeof fbq!=='undefined') fbq('track','InitiateCheckout',{value:79.90,currency:'BRL'},{eventID:eid});
+        }
+        send({ev:'checkout_click',t:Date.now(),s:sid,name:btn,
               ref:document.referrer?document.referrer.split('/')[2]:'',
               fbp:getFbp(),fbc:getFbc(),url:location.href,ua:navigator.userAgent.slice(0,200),event_id:eid});
       }catch(e){}
