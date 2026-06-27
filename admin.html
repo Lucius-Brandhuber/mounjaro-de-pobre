@@ -45,6 +45,15 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .card-sub{font-size:12px;color:#bbb;margin-left:auto}
 .card-body{padding:14px 22px 22px}
 
+/* ── FILTER BAR ── */
+.filterbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff;border:1px solid #e8ecf0;border-radius:14px;padding:12px 16px;margin-bottom:18px}
+.fb-lbl{font-size:13px;font-weight:700;color:#1a1a2e}
+.filterbar input[type=date]{border:1px solid #e5e7eb;border-radius:9px;padding:8px 10px;font-size:13px;background:#fff;cursor:pointer;color:#333}
+.fb-btn{padding:8px 14px;border:1px solid #e5e7eb;border-radius:9px;background:#fff;font-size:13px;cursor:pointer;color:#333;font-weight:600;transition:.15s}
+.fb-btn:hover{background:#f5f7fa}
+.fb-btn.on{background:#3db8ac;color:#fff;border-color:#3db8ac}
+.fb-info{font-size:12px;color:#888;margin-left:auto}
+
 /* ── KPI GRID ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:14px;margin-bottom:18px}
 .kpi{background:#fff;border-radius:14px;border:1px solid #e8ecf0;padding:18px 16px;transition:transform .18s,box-shadow .18s}
@@ -194,6 +203,15 @@ tr:hover td{background:#fafbff}
 
   <div class="content">
 
+    <!-- FILTRO POR DIA -->
+    <div class="filterbar">
+      <span class="fb-lbl">📅 Filtrar por dia</span>
+      <input type="date" id="dayPick" onchange="setDay(this.value)">
+      <button class="fb-btn" onclick="setToday()">Hoje</button>
+      <button class="fb-btn on" id="fbAll" onclick="setDay('')">Todos os dias</button>
+      <span class="fb-info" id="filterInfo"></span>
+    </div>
+
     <!-- KPIs -->
     <div class="kpi-grid" id="kpiRow"></div>
 
@@ -245,6 +263,42 @@ const QUIZ_FINAL_STEP = 44;  // tela de resultado final
 const QUIZ_MID_STEP   = 23;  // ~metade do quiz
 
 let _ev=[], _vendas=[], _capiLog=[], _evPage=1, _evPP=10;
+// Master (todos os dados) + filtro de dia
+let _evAll=[], _vendasAll=[], _capiLogAll=[], _dayFilter=null;
+
+/* ── FILTRO POR DIA ── */
+function dayKey(t){const d=new Date(t);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function applyFilter(){
+  if(!_dayFilter){ _ev=_evAll; _vendas=_vendasAll; _capiLog=_capiLogAll; }
+  else {
+    _ev      =_evAll.filter(e=>e.t&&dayKey(e.t)===_dayFilter);
+    _vendas  =_vendasAll.filter(v=>v.data&&dayKey(new Date(v.data).getTime())===_dayFilter);
+    _capiLog =_capiLogAll.filter(l=>l.data&&dayKey(new Date(l.data).getTime())===_dayFilter);
+  }
+  _evPage=1;
+  render();
+  updateFilterUI();
+}
+function setDay(v){ _dayFilter=v||null; const p=document.getElementById('dayPick'); if(p)p.value=v||''; applyFilter(); }
+function setToday(){ setDay(dayKey(Date.now())); }
+function setupDayPicker(){
+  const p=document.getElementById('dayPick'); if(!p)return;
+  p.max=dayKey(Date.now());
+  const ts=_evAll.map(e=>e.t).filter(Boolean);
+  if(ts.length){ const mn=Math.min.apply(null,ts); if(isFinite(mn))p.min=dayKey(mn); }
+}
+function updateFilterUI(){
+  const all=document.getElementById('fbAll'); if(all)all.classList.toggle('on',!_dayFilter);
+  const info=document.getElementById('filterInfo');
+  if(info){
+    if(_dayFilter){
+      const d=new Date(_dayFilter+'T12:00:00');
+      info.textContent='Mostrando '+d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'})+' · '+_ev.length+' eventos · '+_vendas.length+' vendas';
+    } else {
+      info.textContent='Todos os dias · '+_evAll.length+' eventos · '+_vendasAll.length+' vendas';
+    }
+  }
+}
 
 /* ── AUTH ── */
 function auth(){
@@ -376,7 +430,7 @@ async function fetchSheet(qs){
 /* ── INIT ── */
 async function init(){
   const cached=merge(getCache(),getLocal()).map(norm).filter(e=>e.s);
-  if(cached.length){_ev=cached;render();}
+  if(cached.length){_evAll=cached;setupDayPicker();applyFilter();}
   sync();
 }
 
@@ -389,17 +443,18 @@ async function sync(){
   ]);
   const remNorm=remote.map(norm).filter(e=>e.s);
   const local=getLocal().map(norm).filter(e=>e.s);
-  const base=remNorm.length>0?remNorm:(_ev.length>0?_ev:[]);
+  const base=remNorm.length>0?remNorm:(_evAll.length>0?_evAll:[]);
   const merged=merge(base.slice(),local);
   if(merged.length>0){
     localStorage.setItem(CKEY,JSON.stringify(merged));
-    _ev=merged;
+    _evAll=merged;
   }
-  _vendas=vendas;
-  _capiLog=capiLog;
+  _vendasAll=vendas;
+  _capiLogAll=capiLog;
   document.getElementById('syncTxt').textContent='';
-  render();
-  toast(`✓ ${_ev.length} eventos · ${_vendas.length} vendas · ${_capiLog.length} CAPI`);
+  setupDayPicker();
+  applyFilter();
+  toast(`✓ ${_evAll.length} eventos · ${_vendasAll.length} vendas · ${_capiLogAll.length} CAPI`);
 }
 
 async function doRefresh(){await sync();}
@@ -869,9 +924,10 @@ function switchTab(name,btn){
 
 /* ── DATE ── */
 function updateDate(){
-  const now=new Date(),d14=new Date(now-14*864e5);
   const f=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
-  const s=f(d14)+' – '+f(now);
+  let s;
+  if(_dayFilter){ s=f(new Date(_dayFilter+'T12:00:00')); }
+  else { const now=new Date(),d14=new Date(now-14*864e5); s=f(d14)+' – '+f(now); }
   document.getElementById('dateRange').textContent=s;
   const d2=document.getElementById('dateRange2');
   if(d2)d2.textContent=s;
@@ -909,7 +965,9 @@ function resetLeads(){
   setTimeout(()=>{
     localStorage.removeItem(KEY);localStorage.removeItem(CKEY);
     Object.keys(localStorage).filter(k=>k.startsWith('mdjp_seen_')).forEach(k=>localStorage.removeItem(k));
-    _ev=[];_vendas=[];_capiLog=[];render();
+    _ev=[];_vendas=[];_capiLog=[];_evAll=[];_vendasAll=[];_capiLogAll=[];_dayFilter=null;
+    const p=document.getElementById('dayPick');if(p)p.value='';
+    render();updateFilterUI();
     toast('Dados apagados ✓');
   },1200);
 }
