@@ -16,6 +16,7 @@ fbq("init","2494273564378951");fbq("track","PageView");
 <link rel="dns-prefetch" href="https://cdn.utmify.com.br">
 <link rel="preload" as="image" href="imagens%20quiz/imagem%20inicial.jpg">
 <link rel="preload" as="image" href="logos/nova%20logo.png">
+<link rel="preload" as="image" href="logos/logo2.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:#fff;width:100%;min-height:100vh}
@@ -154,7 +155,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:24px;heigh
 <script>
 const IMGS='imagens%20quiz/';
 const DEPS='imagens%20depoimentos/';
-const LOGO='logos/nova%20logo.png';
+
+// A/B test: logo variant determinado pelo session ID (estável por dispositivo)
+function _abVariant(){
+  let sid=localStorage.getItem('mdjp_sid');
+  if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem('mdjp_sid',sid);}
+  // soma char codes → par = A (nova logo), ímpar = B (logo2)
+  const sum=[...sid].reduce((a,c)=>a+c.charCodeAt(0),0);
+  return sum%2===0?'A':'B';
+}
+const LOGO_VARIANT=_abVariant(); // 'A' ou 'B'
+const LOGO=LOGO_VARIANT==='A'?'logos/nova%20logo.png':'logos/logo2.png';
 
 const state={
   step:0,       // 0=landing,1=gender,2+=quiz
@@ -1014,7 +1025,7 @@ function setWUnit(u){
     try{
       if(ev==='view'&&hasSeen(data.step))return;
       if(ev==='view')markSeen(data.step);
-      var obj={ev:ev,t:Date.now(),s:sid(),fbp:getFbp(),fbc:getFbc(),url:location.href,ua:navigator.userAgent.slice(0,200)};
+      var obj={ev:ev,t:Date.now(),s:sid(),fbp:getFbp(),fbc:getFbc(),url:location.href,ua:navigator.userAgent.slice(0,200),logo_ab:window.LOGO_VARIANT||'A'};
       for(var k in data)obj[k]=data[k];
       try{
         var arr=JSON.parse(localStorage.getItem(KEY)||'[]');

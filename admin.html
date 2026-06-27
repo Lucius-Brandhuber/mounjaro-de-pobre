@@ -717,6 +717,42 @@ function renderResumo(sc,views,answers,checkouts,vViews,att){
     <div class="bar-track"><div class="bar-fill" style="width:${(v/maxA*100).toFixed(0)}%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
     <span class="bar-n">${v}</span></div>`).join('');
 
+  // A/B test: logo variant
+  const abMap={A:{vis:new Set(),leads:new Set(),vv:new Set(),chk:new Set()},B:{vis:new Set(),leads:new Set(),vv:new Set(),chk:new Set()}};
+  views.forEach(e=>{
+    const v=(e.logo_ab==='B')?'B':'A';
+    if(+e.step===0)abMap[v].vis.add(e.s);
+    if(+e.step===1)abMap[v].leads.add(e.s);
+    const name=(e.name||'').toLowerCase();
+    if(name==='vendas'||+e.step===999)abMap[v].vv.add(e.s);
+  });
+  vViews.forEach(e=>{const v=(e.logo_ab==='B')?'B':'A';abMap[v].vv.add(e.s);});
+  checkouts.forEach(e=>{const v=(e.logo_ab==='B')?'B':'A';abMap[v].chk.add(e.s);});
+  answers.filter(e=>+e.step===1).forEach(e=>{const v=(e.logo_ab==='B')?'B':'A';abMap[v].leads.add(e.s);});
+  function abPct(a,b){return a&&b?((a/b)*100).toFixed(1)+'%':'—';}
+  function abCard(v,label,imgName){
+    const d=abMap[v];
+    const vis=d.vis.size,lds=d.leads.size,vvN=d.vv.size,chk=d.chk.size;
+    const cr=abPct(chk,vis),lr=abPct(lds,vis);
+    return`<div class="mc" style="border-top:3px solid ${v==='A'?'#3db8ac':'#4A7AF5'}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <span style="font-size:11px;font-weight:800;letter-spacing:1px;background:${v==='A'?'#3db8ac':'#4A7AF5'};color:#fff;padding:2px 8px;border-radius:4px">VARIANT ${v}</span>
+        <img src="logos/${imgName}" style="height:28px;object-fit:contain;background:#f5f5f5;border-radius:4px;padding:2px 6px">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div style="text-align:center"><div style="font-size:20px;font-weight:900;color:#1a1a2e">${vis}</div><div style="font-size:10px;color:#aaa;text-transform:uppercase">Visitantes</div></div>
+        <div style="text-align:center"><div style="font-size:20px;font-weight:900;color:#1a1a2e">${lds}</div><div style="font-size:10px;color:#aaa;text-transform:uppercase">Leads</div></div>
+        <div style="text-align:center"><div style="font-size:20px;font-weight:900;color:#1a1a2e">${chk}</div><div style="font-size:10px;color:#aaa;text-transform:uppercase">Checkouts</div></div>
+        <div style="text-align:center"><div style="font-size:20px;font-weight:900;color:${v==='A'?'#3db8ac':'#4A7AF5'}">${cr}</div><div style="font-size:10px;color:#aaa;text-transform:uppercase">Conv. Checkout</div></div>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:#aaa">Taxa Lead: ${lr}</div>
+    </div>`;
+  }
+  const abHTML=`<div class="mc" style="margin-bottom:14px">
+    <h3 style="margin-bottom:12px">🧪 Teste A/B — Logo</h3>
+    <div class="two-col" style="gap:12px">${abCard('A','Nova Logo','nova%20logo.png')}${abCard('B','Logo 2','logo2.png')}</div>
+  </div>`;
+
   // Checkout
   const chkN=new Set(checkouts.map(e=>e.s)).size;
   const vN=new Set(vViews.map(e=>e.s)).size;
@@ -734,6 +770,7 @@ function renderResumo(sc,views,answers,checkouts,vViews,att){
   }).join('');
 
   document.getElementById('tab-resumo').innerHTML=`
+    ${abHTML}
     <div class="two-col" style="margin-bottom:14px">
       <div class="mc"><h3>Por Gênero</h3>${gRows||'<p style="color:#ccc;font-size:13px">Sem dados</p>'}</div>
       <div class="mc"><h3>Por Origem</h3>${rRows||'<p style="color:#ccc;font-size:13px">Sem dados</p>'}</div>
