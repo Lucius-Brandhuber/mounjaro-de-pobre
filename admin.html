@@ -262,6 +262,10 @@ const GAS  = 'https://script.google.com/macros/s/AKfycby-7fqfYdyX3_ox1ooSlplYeo-
 const QUIZ_FINAL_STEP = 44;  // tela de resultado final
 const QUIZ_MID_STEP   = 23;  // ~metade do quiz
 
+// Início do teste A/B de logo (2026-06-27). Eventos antes disso são ignorados no card A/B
+// (todos viram a logo nova, então contaminariam a comparação).
+const AB_START = 1782536432239;
+
 let _ev=[], _vendas=[], _capiLog=[], _evPage=1, _evPP=10;
 // Master (todos os dados) + filtro de dia
 let _evAll=[], _vendasAll=[], _capiLogAll=[], _dayFilter=null;
@@ -372,6 +376,7 @@ function norm(e){
     event_id:e.event_id||'',
     fbp:   e.fbp   ||'',
     fbc:   e.fbc   ||'',
+    logo_ab:e.logo_ab||e.logoAb||'',
     url,
     src:   qp(url,'utm_source'),
     med:   qp(url,'utm_medium'),
@@ -717,18 +722,25 @@ function renderResumo(sc,views,answers,checkouts,vViews,att){
     <div class="bar-track"><div class="bar-fill" style="width:${(v/maxA*100).toFixed(0)}%;background:linear-gradient(90deg,#8b5cf6,#a78bfa)"></div></div>
     <span class="bar-n">${v}</span></div>`).join('');
 
-  // A/B test: logo variant
+  // A/B test: logo variant. O GAS não persiste o campo logo_ab (cabeçalho fixo),
+  // então recalculamos o variant a partir do session id — função IDÊNTICA à do index.html.
+  // Só conta tráfego a partir de AB_START (ignora as visitas antigas que viram só a logo nova).
+  function abVariant(e){
+    if(e.logo_ab==='A'||e.logo_ab==='B')return e.logo_ab; // ground truth se o GAS for atualizado
+    const sid=e.s||'';if(!sid)return 'A';
+    let sum=0;for(let i=0;i<sid.length;i++)sum+=sid.charCodeAt(i);
+    return sum%2===0?'A':'B';
+  }
   const abMap={A:{vis:new Set(),leads:new Set(),vv:new Set(),chk:new Set()},B:{vis:new Set(),leads:new Set(),vv:new Set(),chk:new Set()}};
-  views.forEach(e=>{
-    const v=(e.logo_ab==='B')?'B':'A';
+  const inAB=e=>(e.t||0)>=AB_START;
+  views.filter(inAB).forEach(e=>{
+    const v=abVariant(e);
     if(+e.step===0)abMap[v].vis.add(e.s);
     if(+e.step===1)abMap[v].leads.add(e.s);
-    const name=(e.name||'').toLowerCase();
-    if(name==='vendas'||+e.step===999)abMap[v].vv.add(e.s);
   });
-  vViews.forEach(e=>{const v=(e.logo_ab==='B')?'B':'A';abMap[v].vv.add(e.s);});
-  checkouts.forEach(e=>{const v=(e.logo_ab==='B')?'B':'A';abMap[v].chk.add(e.s);});
-  answers.filter(e=>+e.step===1).forEach(e=>{const v=(e.logo_ab==='B')?'B':'A';abMap[v].leads.add(e.s);});
+  vViews.filter(inAB).forEach(e=>{abMap[abVariant(e)].vv.add(e.s);});
+  checkouts.filter(inAB).forEach(e=>{abMap[abVariant(e)].chk.add(e.s);});
+  answers.filter(e=>+e.step===1&&inAB(e)).forEach(e=>{abMap[abVariant(e)].leads.add(e.s);});
   function abPct(a,b){return a&&b?((a/b)*100).toFixed(1)+'%':'—';}
   function abCard(v,label,imgName){
     const d=abMap[v];
@@ -748,8 +760,12 @@ function renderResumo(sc,views,answers,checkouts,vViews,att){
       <div style="margin-top:8px;font-size:11px;color:#aaa">Taxa Lead: ${lr}</div>
     </div>`;
   }
+  const abTot=abMap.A.vis.size+abMap.B.vis.size;
   const abHTML=`<div class="mc" style="margin-bottom:14px">
-    <h3 style="margin-bottom:12px">🧪 Teste A/B — Logo</h3>
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;flex-wrap:wrap;gap:6px">
+      <h3 style="margin:0">🧪 Teste A/B — Logo</h3>
+      <span style="font-size:11px;color:#aaa">desde ${new Date(AB_START).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})} · ${abTot} visitantes no teste</span>
+    </div>
     <div class="two-col" style="gap:12px">${abCard('A','Nova Logo','nova%20logo.png')}${abCard('B','Logo 2','logo2.png')}</div>
   </div>`;
 
