@@ -433,8 +433,11 @@ async function fetchSheet(qs){
 }
 
 /* ── INIT ── */
+// Ignora sessões de teste (id começa com "TESTE", maiúsc/minúsc) — sessões reais são base36 minúsculo
+function notTest(e){return e.s&&!/^teste/i.test(e.s);}
+
 async function init(){
-  const cached=merge(getCache(),getLocal()).map(norm).filter(e=>e.s);
+  const cached=merge(getCache(),getLocal()).map(norm).filter(notTest);
   if(cached.length){_evAll=cached;setupDayPicker();applyFilter();}
   sync();
 }
@@ -446,8 +449,8 @@ async function sync(){
     fetchSheet('vendas'),
     fetchSheet('capi_log')
   ]);
-  const remNorm=remote.map(norm).filter(e=>e.s);
-  const local=getLocal().map(norm).filter(e=>e.s);
+  const remNorm=remote.map(norm).filter(notTest);
+  const local=getLocal().map(norm).filter(notTest);
   const base=remNorm.length>0?remNorm:(_evAll.length>0?_evAll:[]);
   const merged=merge(base.slice(),local);
   if(merged.length>0){
@@ -455,7 +458,7 @@ async function sync(){
     _evAll=merged;
   }
   _vendasAll=vendas;
-  _capiLogAll=capiLog;
+  _capiLogAll=capiLog.filter(e=>!/^teste/i.test(e.s||''));
   document.getElementById('syncTxt').textContent='';
   setupDayPicker();
   applyFilter();
